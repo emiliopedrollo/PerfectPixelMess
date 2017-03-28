@@ -5,50 +5,55 @@
 #include <stdbool.h>
 #include "main.h"
 
-//Image load_image();
+Image *load_image(FILE *stream);
 
 int main (int argc, char *argv[]) {
 
-
     int c;
     bool reading = true;
+    bool read_from_stdin = true;
+    char *read_from = NULL;
+    Image *image;
 
     // Os blocos a seguir verificam a existência de parametros de
     // execução do executavel e definem variaveis que alterarão o
     // comportamento do mesmo de acordo com estes parametros
     static struct option long_options[] = {
-            {"input", required_argument, 0, 'i'},
-            {0,       0,                 0,  0 }
+            {"input",  required_argument, 0, 'o'},
+            {"output", required_argument, 0, 'i'},
+            {0,        0,                 0,  0 }
     };
 
     while (reading) {
         int option_index = 0;
-        c = getopt_long(argc, argv, "", long_options, &option_index);
-
+        c = getopt_long(argc, argv, "i:o:", long_options, &option_index);
 
         switch (c) {
             case 'i':
-                printf("%s",optarg);
+                read_from_stdin = false;
+                read_from = malloc((strlen(optarg)+1) * sizeof(char));
+                strcpy(read_from,optarg);
                 break;
             case -1:
                 reading = false;
                 break;
+            default:
+                break;
         }
-//        if (c == -1)
-//            break;
-//
-//        if (c == 0) {
-//            if (long_options[option_index].name == "pitthan") {
-//            } else if (long_options[option_index].name == "debug") {
-//            }
-//        }
+    }
 
+    if (read_from_stdin){
+        image = load_image(stdin);
+    } else if (read_from != NULL) {
+        FILE *file = fopen(read_from, "r");
+        image = load_image(file);
+        fclose(file);
     }
 
 
 //    int a, i, j, l, m;
 
-//    pixel = load_image();
+//    pixel = load_from_file();
 
 
 
@@ -66,32 +71,39 @@ int main (int argc, char *argv[]) {
 }
 
 
-//Image load_image() {
-//    int i, j;
+Image *load_image(FILE *stream) {
+    int i, j;
 
+    Image *image = NULL;
 
-//    FILE *arq;
-//    arq = fopen(argv[1], "r");
-//    char tst[5];
-//    if (arq != NULL) {
-//        fscanf(arq, "%s", tst);
-//        fscanf(arq, "%d", a);
-//        fscanf(arq, "%d", l);
-//        fscanf(arq, "%d", m);
-//        pixel = (Pixel **) malloc((*a) * sizeof(Pixel));
-//
-//        for (i = 0; i < *a; i++) {
-//            pixel[i] = (Pixel *) malloc((*l) * sizeof(Pixel));
-//            for (j = 0; j < *l; j++) {
-//                fscanf(arq, "%d", &pixel[i][j].r);
-//                fscanf(arq, "%d", &pixel[i][j].g);
-//                fscanf(arq, "%d", &pixel[i][j].b);
-//            }
-//        }
-//    }
-//    fclose(arq);
-//    return pixel;
-//}
+    char format[5];
+    if (stream != NULL) {
+        //TODO: Treat invalid stream
+        //TODO: Treat comment lines
+        //TODO: Treat data too short
+
+        fscanf(stream, "%s\n", format);
+        if (strcmp(format,"P3") != 0){
+            fprintf(stderr,"Input is not in a valid format. Please use PPM P3.");
+            exit(EXIT_FAILURE);
+        }
+
+        image = malloc(sizeof (Image));
+        fscanf(stream, "%d %d\n", &image->height, &image->width);
+        fscanf(stream, "%d\n", &image->max_bright);
+
+        image->matrix = (Pixel**) malloc(image->height * sizeof(Pixel*));
+        for (i=0;i<image->height;i++){
+            image->matrix[i] = (Pixel*) malloc(image->width * sizeof(Pixel));
+            for (j=0;j<image->width;j++){
+                fscanf(stream, "%hhu", &image->matrix[i][j].r);
+                fscanf(stream, "%hhu", &image->matrix[i][j].g);
+                fscanf(stream, "%hhu", &image->matrix[i][j].b);
+            }
+        }
+    }
+    return image;
+}
 
 void salva(int argc, char *argv[], Pixel **pixel, int *a, int *l, int *m) {
     int i, j;

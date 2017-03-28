@@ -5,12 +5,15 @@
 #ifndef PERFECTPIXELMESS_MAIN_H
 
 typedef struct {
-    int r;
-    int g;
-    int b;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 } Pixel;
 
 typedef struct {
+    int width;
+    int height;
+    int max_bright;
     Pixel **matrix;
 } Image;
 
