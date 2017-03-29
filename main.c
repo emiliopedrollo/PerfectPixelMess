@@ -6,21 +6,25 @@
 #include "main.h"
 
 Image *load_image(FILE *stream);
+bool output(FILE *stream, Image *image);
 
 int main (int argc, char *argv[]) {
 
     int c;
     bool reading = true;
     bool read_from_stdin = true;
+    bool output_to_stdout = true;
     char *read_from = NULL;
+    char *output_to = NULL;
     Image *image;
 
     // Os blocos a seguir verificam a existência de parametros de
     // execução do executavel e definem variaveis que alterarão o
     // comportamento do mesmo de acordo com estes parametros
     static struct option long_options[] = {
-            {"input",  required_argument, 0, 'o'},
-            {"output", required_argument, 0, 'i'},
+            {"input",  required_argument, 0, 'i'},
+            {"output", required_argument, 0, 'o'},
+            {"filter", required_argument, 0, 'f'},
             {0,        0,                 0,  0 }
     };
 
@@ -34,6 +38,14 @@ int main (int argc, char *argv[]) {
                 read_from = malloc((strlen(optarg)+1) * sizeof(char));
                 strcpy(read_from,optarg);
                 break;
+            case 'o':
+                output_to_stdout = false;
+                output_to = malloc((strlen(optarg)+1) * sizeof(char));
+                strcpy(output_to,optarg);
+                break;
+            case 'f':
+
+                break;
             case -1:
                 reading = false;
                 break;
@@ -44,20 +56,13 @@ int main (int argc, char *argv[]) {
 
     if (read_from_stdin){
         image = load_image(stdin);
-    } else if (read_from != NULL) {
-        FILE *file = fopen(read_from, "r");
-        image = load_image(file);
-        fclose(file);
+    } else {
+        FILE *in_file = fopen(read_from, "r");
+        image = load_image(in_file);
+        fclose(in_file);
     }
 
-
-//    int a, i, j, l, m;
-
-//    pixel = load_from_file();
-
-
-
-    //negativo(pixel,&a,&l,&m);
+    //negative(pixel,&a,&l,&m);
 
     //aumentar_brilho(pixel,&a,&l,&m);
 
@@ -65,7 +70,14 @@ int main (int argc, char *argv[]) {
 
     //matriz_convolucao(pixel ,&a, &l,&m);
 
-//    salva(argc, argv, pixel, &a, &l, &m);
+
+    if (output_to_stdout){
+        output(stdout,image);
+    } else {
+        FILE *out_file = fopen(output_to, "w");
+        output(out_file,image);
+        fclose(out_file);
+    }
 
     exit(0);
 }
@@ -89,8 +101,8 @@ Image *load_image(FILE *stream) {
         }
 
         image = malloc(sizeof (Image));
-        fscanf(stream, "%d %d\n", &image->height, &image->width);
-        fscanf(stream, "%d\n", &image->max_bright);
+        fscanf(stream, "%d %d\n", &image->width, &image->height);
+        fscanf(stream, "%hhu\n", &image->max_bright);
 
         image->matrix = (Pixel**) malloc(image->height * sizeof(Pixel*));
         for (i=0;i<image->height;i++){
@@ -105,36 +117,35 @@ Image *load_image(FILE *stream) {
     return image;
 }
 
-void salva(int argc, char *argv[], Pixel **pixel, int *a, int *l, int *m) {
+bool output(FILE *stream, Image *image) {
     int i, j;
-    FILE *arq;
 
-    arq = fopen(argv[2], "w");
-
-    fprintf(arq, "P3\n");
-    fprintf(arq, "%d ", *a);
-    fprintf(arq, "%d\n", *l);
-    fprintf(arq, "%d\n", *m);
-
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            fprintf(arq, "%d ", pixel[i][j].r);
-            fprintf(arq, "%d ", pixel[i][j].g);
-            fprintf(arq, "%d\n", pixel[i][j].b);
-        }
+    if (stream == NULL){
+        return false;
     }
 
-    fclose(arq);
+    fprintf(stream, "P3\n");
+    fprintf(stream, "%d %d\n", image->width, image->height);
+    fprintf(stream, "%d\n", image->max_bright);
 
+    for (i = 0; i < image->height; i++) {
+        for (j = 0; j < image->width; j++) {
+            fprintf(stream, "%d ", image->matrix[i][j].r);
+            fprintf(stream, "%d ", image->matrix[i][j].g);
+            fprintf(stream, "%d ", image->matrix[i][j].b);
+        }
+        fprintf(stream, "\n");
+    }
+    return true;
 }
 
-void negativo(Pixel **pixel, int *a, int *l, int *m) {
+void negative(Image *image) {
     int i, j;
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            pixel[i][j].r = 255 - pixel[i][j].r;
-            pixel[i][j].g = 255 - pixel[i][j].g;
-            pixel[i][j].b = 255 - pixel[i][j].b;
+    for (i = 0; i < image->height; i++) {
+        for (j = 0; j < image->width; j++) {
+            image->matrix[i][j].r = image->max_bright - image->matrix[i][j].r;
+            image->matrix[i][j].g = image->max_bright - image->matrix[i][j].g;
+            image->matrix[i][j].b = image->max_bright - image->matrix[i][j].b;
         }
     }
 }

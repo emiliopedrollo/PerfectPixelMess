@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
     int width;
     int height;
-    int max_bright;
+    unsigned char max_bright;
     Pixel **matrix;
 } Image;
 
