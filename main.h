@@ -17,6 +17,11 @@ typedef struct {
     Pixel **matrix;
 } Image;
 
+typedef struct {
+    char* name;
+    char** params;
+} FilterDef;
+
 #define PERFECTPIXELMESS_MAIN_H
 
 #endif //PERFECTPIXELMESS_MAIN_H

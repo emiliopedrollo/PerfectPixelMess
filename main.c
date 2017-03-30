@@ -4,20 +4,25 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include "main.h"
+#include "utils.h"
+#include "lists.h"
 
 Image *load_image(FILE *stream);
 bool output(FILE *stream, Image *image);
+FilterDef *extractFilterDef(char* argument);
 void display_usage();
 
 int main (int argc, char *argv[]) {
 
-    int c;
+    int c, i;
     bool reading = true;
     bool read_from_stdin = true;
     bool output_to_stdout = true;
     bool show_help = false;
     char *read_from = NULL;
     char *output_to = NULL;
+    char** tokens;
+    FilterNode *filters = NULL;
     Image *image;
 
     // Os blocos a seguir verificam a existência de parametros de
@@ -47,6 +52,19 @@ int main (int argc, char *argv[]) {
                 strcpy(output_to,optarg);
                 break;
             case 'f':
+                filters = list_new();
+
+                tokens = str_split(topntail(optarg),',');
+                for (i = 0; *(tokens + i); i++){
+                    list_insert(filters,extractFilterDef(*(tokens + i)));
+                    free(*(tokens + i));
+                }
+                free(tokens);
+
+                list_print(filters);
+
+                system("pause");
+                exit(EXIT_SUCCESS);
 
                 break;
             case 'h':
@@ -63,7 +81,6 @@ int main (int argc, char *argv[]) {
 
     if (show_help){
         display_usage();
-        system("pause");
         exit(EXIT_SUCCESS);
     }
 
@@ -93,6 +110,31 @@ int main (int argc, char *argv[]) {
     }
 
     exit(0);
+}
+
+FilterDef *extractFilterDef(char* argument){
+    FilterDef* filter;
+    char** tokens;
+    char* params_raw;
+
+    filter = malloc(sizeof (FilterDef));
+    if (countChars(argument,'=') == 0){
+        filter->name = malloc((sizeof argument)+1);
+        strcpy(filter->name,argument);
+        filter->params = NULL;
+    } else {
+        tokens = str_split(argument,'=');
+        filter->name = *tokens;
+        params_raw = malloc((sizeof *(tokens+1))+1);
+        strcpy(params_raw,*(tokens+1));
+
+        if (countChars(params_raw,';') > 1)
+            topntail(params_raw);
+
+        filter->params = str_split(params_raw,';');
+    }
+
+    return filter;
 }
 
 void display_usage() {
