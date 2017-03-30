@@ -7,6 +7,7 @@
 
 Image *load_image(FILE *stream);
 bool output(FILE *stream, Image *image);
+void display_usage();
 
 int main (int argc, char *argv[]) {
 
@@ -14,6 +15,7 @@ int main (int argc, char *argv[]) {
     bool reading = true;
     bool read_from_stdin = true;
     bool output_to_stdout = true;
+    bool show_help = false;
     char *read_from = NULL;
     char *output_to = NULL;
     Image *image;
@@ -25,12 +27,13 @@ int main (int argc, char *argv[]) {
             {"input",  required_argument, 0, 'i'},
             {"output", required_argument, 0, 'o'},
             {"filter", required_argument, 0, 'f'},
+            {"help",   no_argument      , 0, 'h'},
             {0,        0,                 0,  0 }
     };
 
     while (reading) {
         int option_index = 0;
-        c = getopt_long(argc, argv, "i:o:", long_options, &option_index);
+        c = getopt_long(argc, argv, "i:o:f:h", long_options, &option_index);
 
         switch (c) {
             case 'i':
@@ -46,12 +49,22 @@ int main (int argc, char *argv[]) {
             case 'f':
 
                 break;
+            case 'h':
+            case '?':
+                show_help = true;
+                break;
             case -1:
                 reading = false;
                 break;
             default:
                 break;
         }
+    }
+
+    if (show_help){
+        display_usage();
+        system("pause");
+        exit(EXIT_SUCCESS);
     }
 
     if (read_from_stdin){
@@ -80,6 +93,27 @@ int main (int argc, char *argv[]) {
     }
 
     exit(0);
+}
+
+void display_usage() {
+    printf("Usage: ppm [options]...\n"
+    "Apply filters to ppm images\n"
+    "\n"
+    "Mandatory arguments to long options are mandatory for short options too.\n"
+    "  -i --input=FILE            Use FILE as input stream. Otherwise ppm uses stdin.\n"
+    "  -o --output=FILE           Outputs resulted image to FILE. Otherwise prints to stdout.\n"
+    "  -f --filter={F1,F2=(1;7)}  Sets the filter to use on the input image. Where F1 represent \n"
+    "                               one of the filters listed bellow, F2=1 represent another with 1\n"
+    "                               as an argument. Filters must be contained between brackets and\n"
+    "                               separated by commas. Arguments, if more than one must be inside\n"
+    "                               parentheses and separated by semicolons.\n"
+    "\n"
+    "\n"
+    "The available filters are:\n"
+    "  INV        Inverts the image\n"
+    "  BRI=INT    Changes the bright of the image. INT is the intensity of the filter, must be\n"
+    "               between -255 and 255.\n"
+    "\n");
 }
 
 
