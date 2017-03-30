@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <mem.h>
+#include <memory.h>
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -54,14 +54,14 @@ char** str_split(char* a_str, const char a_delim)
     return result;
 }
 
-char *topntail(char *str)
-{
-    size_t len = strlen(str);
-    assert(len >= 2); // or whatever you want to do with short strings
-    memmove(str, str+1, len-2);
-    str[len-2] = 0;
-    return str;
-}
+//char *topntail(char *str)
+//{
+//    size_t len = strlen(str);
+//    assert(len >= 2); // or whatever you want to do with short strings
+//    memmove(str, str+1, len-2);
+//    str[len-2] = 0;
+//    return str;
+//}
 
 int countChars( char* s, char c )
 {

@@ -3,22 +3,22 @@
 #include "lists.h"
 #include "main.h"
 
-FilterNode *list_new(){
-    FilterNode *list;
-    list = malloc(sizeof(FilterNode));
-    list->filter = NULL;
+Node *list_new(){
+    Node *list;
+    list = malloc(sizeof(Node));
+    list->content = NULL;
     list->next = NULL;
     list->prev = NULL;
     return list;
 }
 
-void list_rewind(FilterNode *current) {
+void list_rewind(Node *current) {
     while(current->prev != NULL) {
         current = current->prev;
     }
 }
 
-void list_insert(FilterNode *current, FilterDef *filter) {
+void list_insert(Node *current, void *content) {
 
     // current is pointing to first element
     // we iterate until we find the end
@@ -26,17 +26,17 @@ void list_insert(FilterNode *current, FilterDef *filter) {
         current = current->next;
     }
     // create a new Node and list_insert the item
-    current->next = (FilterNode *)malloc(sizeof(FilterNode));
+    current->next = (Node *)malloc(sizeof(Node));
     (current->next)->prev = current;
     current = current->next;
-    current->filter = filter;
+    current->content = content;
     current->next = NULL;
 }
 
-void list_delete(FilterNode *current, FilterDef *filter){
+void list_delete(Node *current, void *content){
 
     // Iterate until we find a pointer next to the one we need to list_delete
-    while (current->next != NULL && (current->next)->filter != filter) {
+    while (current->next != NULL && (current->next)->content != content) {
         current = current->next;
     }
 
@@ -47,7 +47,7 @@ void list_delete(FilterNode *current, FilterDef *filter){
 
     // The element is found in the node next to the one that current points to
     // We removed the node which is next to the pointer (which is also temp)
-    FilterNode *tmp = current->next;
+    Node *tmp = current->next;
     // In special case that we are deleting last node
     if(tmp->next == NULL) {
         current->next = NULL;
@@ -62,32 +62,22 @@ void list_delete(FilterNode *current, FilterDef *filter){
 
     return;
 }
-void list_print(FilterNode *current) {
-    int i;
+void list_print(Node *current, void (*fun)(void *)) {
     while(current != NULL) {
-        if (current->filter != NULL) {
-            printf("Filter: %s\n", current->filter->name);
-            if (current->filter->params != NULL) {
-                printf("Params: ");
-                for (i = 0; *(current->filter->params + i); i++) {
-                    printf("%s ", *(current->filter->params + i));
-                }
-                printf("\n");
-            }
-            printf("\n");
-        }
+        if (current->content != NULL)
+           fun(current->content);
         current = current->next;
     }
 }
 
-int list_find(FilterNode *current, FilterDef *filter) {
+int list_find(Node *current, void *content) {
     // First pointer is head aka dummy node with no data
     // so we go to next one
     current = current->next;
 
     // Iterate through the linked list
     while(current != NULL) {
-        if(current->filter == filter) {
+        if(current->content == content) {
             return 1;
         }
         current = current->next;

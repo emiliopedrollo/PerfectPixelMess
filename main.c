@@ -11,6 +11,8 @@
 FilterDef *extractFilterDef(char* argument);
 void display_usage();
 
+void print_filter(void *pVoid);
+
 int main (int argc, char *argv[]) {
 
     int c, i;
@@ -21,7 +23,7 @@ int main (int argc, char *argv[]) {
     char *read_from = NULL;
     char *output_to = NULL;
     char** tokens;
-    FilterNode *filters = NULL;
+    Node *filters = NULL;
     Image *image;
 
     // Os blocos a seguir verificam a existência de parametros de
@@ -53,16 +55,15 @@ int main (int argc, char *argv[]) {
             case 'f':
                 filters = list_new();
 
-                tokens = str_split(topntail(optarg),',');
+                tokens = str_split(optarg,',');
                 for (i = 0; *(tokens + i); i++){
                     list_insert(filters,extractFilterDef(*(tokens + i)));
                     free(*(tokens + i));
                 }
                 free(tokens);
 
-                list_print(filters);
+                list_print(filters, print_filter);
 
-                system("pause");
                 exit(EXIT_SUCCESS);
 
                 break;
@@ -111,6 +112,22 @@ int main (int argc, char *argv[]) {
     exit(0);
 }
 
+void print_filter(void *pVoid) {
+    FilterDef *filter;
+    int i;
+
+    filter = (FilterDef*) pVoid;
+    printf("Filter: %s\n", filter->name);
+    if (filter->params != NULL) {
+        printf("Params: ");
+        for (i = 0; *(filter->params + i); i++) {
+            printf("%s ", *(filter->params + i));
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 FilterDef *extractFilterDef(char* argument){
     FilterDef* filter;
     char** tokens;
@@ -127,8 +144,8 @@ FilterDef *extractFilterDef(char* argument){
         params_raw = malloc((sizeof *(tokens+1))+1);
         strcpy(params_raw,*(tokens+1));
 
-        if (countChars(params_raw,';') > 1)
-            topntail(params_raw);
+//        if (countChars(params_raw,';') > 1)
+//            topntail(params_raw);
 
         filter->params = str_split(params_raw,';');
     }
@@ -143,11 +160,10 @@ void display_usage() {
     "Mandatory arguments to long options are mandatory for short options too.\n"
     "  -i --input=FILE            Use FILE as input stream. Otherwise ppm uses stdin.\n"
     "  -o --output=FILE           Outputs resulted image to FILE. Otherwise prints to stdout.\n"
-    "  -f --filter={F1,F2=(1;7)}  Sets the filter to use on the input image. Where F1 represent \n"
+    "  -f --filter=F1,F2=1;7      Sets the filter to use on the input image. Where F1 represent \n"
     "                               one of the filters listed bellow, F2=1 represent another with 1\n"
-    "                               as an argument. Filters must be contained between brackets and\n"
-    "                               separated by commas. Arguments, if more than one must be inside\n"
-    "                               parentheses and separated by semicolons.\n"
+    "                               as an argument. Filters must be separated by commas. Arguments, \n"
+    "                               if more than one must be separated by semicolons.\n"
     "\n"
     "\n"
     "The available filters are:\n"
@@ -222,151 +238,151 @@ void matriz_convolucao(Image *image) {
                 }
             }
 
-
-            if(i==0 && j==0 && teste==0){
-                temp[0][0]=copia[i][j];
-                temp[0][1]=copia[i][j];
-                temp[0][2]=copia[i][j];
-                temp[1][0]=copia[i][j];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i][j];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i+1][j+1];
-                teste=1;
-            }
-
-            if(i==0 && j==(*l-1) && teste==0){
-                temp[0][0]=copia[i][j];
-                temp[0][1]=copia[i][j];
-                temp[0][2]=copia[i][j];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j];
-                temp[2][0]=copia[i+1][j-1];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i][j];
-                teste=1;
-            }
-
-            if(i==(*a-1) && j==0 && teste==0){
-                temp[0][0]=copia[i][j];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i-1][j+1];
-                temp[1][0]=copia[i][j];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i][j];
-                temp[2][1]=copia[i][j];
-                temp[2][2]=copia[i][j];
-                teste=1;
-            }
-
-            if(i==(*a-1) && j==(*l-1) && teste==0){
-                temp[0][0]=copia[i-1][j-1];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i][j];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j];
-                temp[2][0]=copia[i][j];
-                temp[2][1]=copia[i][j];
-                temp[2][2]=copia[i][j];
-                teste=1;
-            }
-
-            if(i==0 && teste==0){
-                temp[0][0]=copia[i][j];
-                temp[0][1]=copia[i][j];
-                temp[0][2]=copia[i][j];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i+1][j-1];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i+1][j+1];
-                teste=1;
-            }
-
-            if(i==(*a-1) && teste==0){
-                temp[0][0]=copia[i-1][j-1];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i-1][j+1];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i][j];
-                temp[2][1]=copia[i][j];
-                temp[2][2]=copia[i][j];
-                teste=1;
-            }
-
-            if(j==0 && teste==0){
-                temp[0][0]=copia[i][j];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i-1][j+1];
-                temp[1][0]=copia[i][j];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i][j];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i+1][j+1];
-                teste=1;
-
-            }
-
-            if(j==(*l-1) && teste==0){
-                temp[0][0]=copia[i-1][j-1];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i][j];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j];
-                temp[2][0]=copia[i+1][j-1];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i][j];
-                teste=1;
-            }
-
-            if(teste == 0){
-                temp[0][0]=copia[i-1][j-1];
-                temp[0][1]=copia[i-1][j];
-                temp[0][2]=copia[i-1][j+1];
-                temp[1][0]=copia[i][j-1];
-                temp[1][1]=copia[i][j];
-                temp[1][2]=copia[i][j+1];
-                temp[2][0]=copia[i+1][j-1];
-                temp[2][1]=copia[i+1][j];
-                temp[2][2]=copia[i+1][j+1];
-            }
-            pixel[i][j].r=(temp[0][0].r*matrix[0][0]+temp[0][1].r*matrix[0][1]+temp[0][2].r*matrix[0][2]+temp[1][0].r*matrix[1][0]+temp[1][1].r*matrix[1][1]+temp[1][2].r*matrix[1][2]+temp[2][0].r*matrix[2][0]+temp[2][1].r*matrix[2][1]+temp[2][2].r*matrix[2][2]);
-            pixel[i][j].g=(temp[0][0].g*matrix[0][0]+temp[0][1].g*matrix[0][1]+temp[0][2].g*matrix[0][2]+temp[1][0].g*matrix[1][0]+temp[1][1].g*matrix[1][1]+temp[1][2].g*matrix[1][2]+temp[2][0].g*matrix[2][0]+temp[2][1].g*matrix[2][1]+temp[2][2].g*matrix[2][2]);
-            pixel[i][j].b=(temp[0][0].b*matrix[0][0]+temp[0][1].b*matrix[0][1]+temp[0][2].b*matrix[0][2]+temp[1][0].b*matrix[1][0]+temp[1][1].b*matrix[1][1]+temp[1][2].b*matrix[1][2]+temp[2][0].b*matrix[2][0]+temp[2][1].b*matrix[2][1]+temp[2][2].b*matrix[2][2]);
-            teste=0;
+//
+//            if(i==0 && j==0 && teste==0){
+//                temp[0][0]=copia[i][j];
+//                temp[0][1]=copia[i][j];
+//                temp[0][2]=copia[i][j];
+//                temp[1][0]=copia[i][j];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i][j];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i+1][j+1];
+//                teste=1;
+//            }
+//
+//            if(i==0 && j==(*l-1) && teste==0){
+//                temp[0][0]=copia[i][j];
+//                temp[0][1]=copia[i][j];
+//                temp[0][2]=copia[i][j];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j];
+//                temp[2][0]=copia[i+1][j-1];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i][j];
+//                teste=1;
+//            }
+//
+//            if(i==(*a-1) && j==0 && teste==0){
+//                temp[0][0]=copia[i][j];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i-1][j+1];
+//                temp[1][0]=copia[i][j];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i][j];
+//                temp[2][1]=copia[i][j];
+//                temp[2][2]=copia[i][j];
+//                teste=1;
+//            }
+//
+//            if(i==(*a-1) && j==(*l-1) && teste==0){
+//                temp[0][0]=copia[i-1][j-1];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i][j];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j];
+//                temp[2][0]=copia[i][j];
+//                temp[2][1]=copia[i][j];
+//                temp[2][2]=copia[i][j];
+//                teste=1;
+//            }
+//
+//            if(i==0 && teste==0){
+//                temp[0][0]=copia[i][j];
+//                temp[0][1]=copia[i][j];
+//                temp[0][2]=copia[i][j];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i+1][j-1];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i+1][j+1];
+//                teste=1;
+//            }
+//
+//            if(i==(*a-1) && teste==0){
+//                temp[0][0]=copia[i-1][j-1];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i-1][j+1];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i][j];
+//                temp[2][1]=copia[i][j];
+//                temp[2][2]=copia[i][j];
+//                teste=1;
+//            }
+//
+//            if(j==0 && teste==0){
+//                temp[0][0]=copia[i][j];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i-1][j+1];
+//                temp[1][0]=copia[i][j];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i][j];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i+1][j+1];
+//                teste=1;
+//
+//            }
+//
+//            if(j==(*l-1) && teste==0){
+//                temp[0][0]=copia[i-1][j-1];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i][j];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j];
+//                temp[2][0]=copia[i+1][j-1];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i][j];
+//                teste=1;
+//            }
+//
+//            if(teste == 0){
+//                temp[0][0]=copia[i-1][j-1];
+//                temp[0][1]=copia[i-1][j];
+//                temp[0][2]=copia[i-1][j+1];
+//                temp[1][0]=copia[i][j-1];
+//                temp[1][1]=copia[i][j];
+//                temp[1][2]=copia[i][j+1];
+//                temp[2][0]=copia[i+1][j-1];
+//                temp[2][1]=copia[i+1][j];
+//                temp[2][2]=copia[i+1][j+1];
+//            }
+//            pixel[i][j].r=(temp[0][0].r*matrix[0][0]+temp[0][1].r*matrix[0][1]+temp[0][2].r*matrix[0][2]+temp[1][0].r*matrix[1][0]+temp[1][1].r*matrix[1][1]+temp[1][2].r*matrix[1][2]+temp[2][0].r*matrix[2][0]+temp[2][1].r*matrix[2][1]+temp[2][2].r*matrix[2][2]);
+//            pixel[i][j].g=(temp[0][0].g*matrix[0][0]+temp[0][1].g*matrix[0][1]+temp[0][2].g*matrix[0][2]+temp[1][0].g*matrix[1][0]+temp[1][1].g*matrix[1][1]+temp[1][2].g*matrix[1][2]+temp[2][0].g*matrix[2][0]+temp[2][1].g*matrix[2][1]+temp[2][2].g*matrix[2][2]);
+//            pixel[i][j].b=(temp[0][0].b*matrix[0][0]+temp[0][1].b*matrix[0][1]+temp[0][2].b*matrix[0][2]+temp[1][0].b*matrix[1][0]+temp[1][1].b*matrix[1][1]+temp[1][2].b*matrix[1][2]+temp[2][0].b*matrix[2][0]+temp[2][1].b*matrix[2][1]+temp[2][2].b*matrix[2][2]);
+//            teste=0;
         }
     }
-    for(i=0;i<*a;i++){
-        for(j=0;j<*l;j++){
-            if(pixel[i][j].r<0){
-                pixel[i][j].r=0;
-            }
-            if(pixel[i][j].g<0){
-                pixel[i][j].g=0;
-            }
-            if(pixel[i][j].b<0){
-                pixel[i][j].b=0;
-            }
-            if(pixel[i][j].r>*m){
-                pixel[i][j].r=*m;
-            }
-            if(pixel[i][j].g>*m){
-                pixel[i][j].g=*m;
-            }
-            if(pixel[i][j].b>*m){
-                pixel[i][j].b=*m;
-            }
-        }
-    }
+//    for(i=0;i<*a;i++){
+//        for(j=0;j<*l;j++){
+//            if(pixel[i][j].r<0){
+//                pixel[i][j].r=0;
+//            }
+//            if(pixel[i][j].g<0){
+//                pixel[i][j].g=0;
+//            }
+//            if(pixel[i][j].b<0){
+//                pixel[i][j].b=0;
+//            }
+//            if(pixel[i][j].r>*m){
+//                pixel[i][j].r=*m;
+//            }
+//            if(pixel[i][j].g>*m){
+//                pixel[i][j].g=*m;
+//            }
+//            if(pixel[i][j].b>*m){
+//                pixel[i][j].b=*m;
+//            }
+//        }
+//    }
 
 }
 

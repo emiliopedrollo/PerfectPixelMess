@@ -6,18 +6,18 @@
 
 #ifndef PERFECTPIXELMESS_LISTS_H
 
-typedef struct FilterNode {
-    FilterDef *filter;
-    struct FilterNode *next;
-    struct FilterNode *prev;
-} FilterNode;
+typedef struct Node {
+    void *content;
+    struct Node *next;
+    struct Node *prev;
+} Node;
 
-FilterNode *list_new();
-void list_insert(FilterNode *current, FilterDef *filter);
-void list_delete(FilterNode *current, FilterDef *filter);
-void list_print(FilterNode *current);
-void list_rewind(FilterNode *current);
-int list_find(FilterNode *current, FilterDef *filter);
+Node *list_new();
+void list_insert(Node *current, void *content);
+void list_delete(Node *current, void *content);
+void list_print(Node *current, void (*fun)(void *));
+void list_rewind(Node *current);
+int list_find(Node *current, void *content);
 
 #define PERFECTPIXELMESS_LISTS_H
 
