@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include "image.h"
-#include "main.h"
 
 Image *load_image(FILE *stream) {
     int i, j;
@@ -18,7 +17,7 @@ Image *load_image(FILE *stream) {
 
         fscanf(stream, "%s\n", format);
         if (strcmp(format,"P3") != 0){
-            fprintf(stderr,"Input is not in a valid format. Please use PPM P3.");
+            fprintf(stderr,"Input is not in a valid format. Please use PPM P3.\n");
             exit(EXIT_FAILURE);
         }
 
@@ -83,4 +82,13 @@ Image *copy_image(Image *image){
 
     return copy;
 
+}
+
+void free_image(Image* image){
+    int i;
+    for (i=0;i<image->height;i++){
+        free(image->matrix[i]);
+    }
+    free(image->matrix);
+    free(image);
 }

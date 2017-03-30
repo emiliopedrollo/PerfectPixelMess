@@ -22,6 +22,7 @@ typedef struct {
 Image *load_image(FILE *stream);
 bool output(FILE *stream, Image *image);
 Image *copy_image(Image *image);
+void free_image(Image* image);
 
 #define PERFECTPIXELMESS_IMAGE_H
 

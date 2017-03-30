@@ -5,6 +5,7 @@
 #ifndef PERFECTPIXELMESS_UTILS_H
 
 char** str_split(char* a_str, const char a_delim);
+char *strdup (const char *s);
 //char *topntail(char *str);
 int countChars( char* s, char c );
 

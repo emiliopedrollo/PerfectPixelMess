@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <memory.h>
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -52,6 +51,13 @@ char** str_split(char* a_str, const char a_delim)
     }
 
     return result;
+}
+
+char *strdup (const char *s) {
+    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
+    if (d == NULL) return NULL;          // No memory
+    strcpy (d,s);                        // Copy the characters
+    return d;                            // Return the new string
 }
 
 //char *topntail(char *str)
