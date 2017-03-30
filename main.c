@@ -6,9 +6,8 @@
 #include "main.h"
 #include "utils.h"
 #include "lists.h"
+#include "image.h"
 
-Image *load_image(FILE *stream);
-bool output(FILE *stream, Image *image);
 FilterDef *extractFilterDef(char* argument);
 void display_usage();
 
@@ -159,61 +158,7 @@ void display_usage() {
 }
 
 
-Image *load_image(FILE *stream) {
-    int i, j;
 
-    Image *image = NULL;
-
-    char format[5];
-    if (stream != NULL) {
-        //TODO: Treat invalid stream
-        //TODO: Treat comment lines
-        //TODO: Treat data too short
-
-        fscanf(stream, "%s\n", format);
-        if (strcmp(format,"P3") != 0){
-            fprintf(stderr,"Input is not in a valid format. Please use PPM P3.");
-            exit(EXIT_FAILURE);
-        }
-
-        image = malloc(sizeof (Image));
-        fscanf(stream, "%d %d\n", &image->width, &image->height);
-        fscanf(stream, "%hhu\n", &image->max_bright);
-
-        image->matrix = (Pixel**) malloc(image->height * sizeof(Pixel*));
-        for (i=0;i<image->height;i++){
-            image->matrix[i] = (Pixel*) malloc(image->width * sizeof(Pixel));
-            for (j=0;j<image->width;j++){
-                fscanf(stream, "%hhu", &image->matrix[i][j].r);
-                fscanf(stream, "%hhu", &image->matrix[i][j].g);
-                fscanf(stream, "%hhu", &image->matrix[i][j].b);
-            }
-        }
-    }
-    return image;
-}
-
-bool output(FILE *stream, Image *image) {
-    int i, j;
-
-    if (stream == NULL){
-        return false;
-    }
-
-    fprintf(stream, "P3\n");
-    fprintf(stream, "%d %d\n", image->width, image->height);
-    fprintf(stream, "%d\n", image->max_bright);
-
-    for (i = 0; i < image->height; i++) {
-        for (j = 0; j < image->width; j++) {
-            fprintf(stream, "%d ", image->matrix[i][j].r);
-            fprintf(stream, "%d ", image->matrix[i][j].g);
-            fprintf(stream, "%d ", image->matrix[i][j].b);
-        }
-        fprintf(stream, "\n");
-    }
-    return true;
-}
 
 void negative(Image *image) {
     int i, j;
@@ -226,172 +171,203 @@ void negative(Image *image) {
     }
 }
 
-void matriz_convolucao(Pixel **pixel, int *a, int *l, int *m) {
-    int mult[3][3];
-    Pixel temp[3][3];
-    int i, j, teste = 0;
+void matriz_convolucao(Image *image) {
+    Image* copy;
+    int matrix[3][3],i,j,x,y,t,r;
+    int matrix_size = 3;
+    int current_bright;
+    int total_weight = 0;
+    int matrix_offset;
 
-    mult[0][0] = 0;
-    mult[0][1] = 0;
-    mult[0][2] = 0;
-    mult[1][0] = 0;
-    mult[1][1] = 1;
-    mult[1][2] = 0;
-    mult[2][0] = 0;
-    mult[2][1] = 0;
-    mult[2][2] = 0;
 
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            if (i == 0 && j == 0 && teste == 0) {
-                temp[0][0] = pixel[i][j];
-                temp[0][1] = pixel[i][j];
-                temp[0][2] = pixel[i][j];
-                temp[1][0] = pixel[i][j];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i][j];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i + 1][j + 1];
-                teste = 1;
+//    Pixel temp[3][3];
+    int teste=0;
+
+    copy = copy_image(image);
+
+    matrix[0][0] = -1;
+    matrix[0][1] = -1;
+    matrix[0][2] = -1;
+    matrix[1][0] = -1;
+    matrix[1][1] =  8;
+    matrix[1][2] = -1;
+    matrix[2][0] = -1;
+    matrix[2][1] = -1;
+    matrix[2][2] = -1;
+
+    matrix_offset = matrix_size/2;
+
+    for (x=0;x<matrix_size;x++)
+        for (y=0;y<matrix_size;y++)
+            total_weight += matrix[i][j];
+
+
+
+    for (i=0;i<image->height;i++) {
+        for (j=0;j<image->width;j++) {
+
+            current_bright = 0;
+            for (x=0;x<matrix_size;x++){
+                 for (y=0;y<matrix_size;y++){
+
+                     t=i;
+                     r=j;
+                     if (i+(x-matrix_offset) < 0 || i+(x+matrix_offset) > image->height-1){
+
+                     }
+                     if (j+(y-matrix_offset) < 0 || j+(y+matrix_offset) > image->width-1){
+
+                     }
+
+                }
             }
-            if (i == 0 && j == (*l - 1) && teste == 0) {
-                temp[0][0] = pixel[i][j];
-                temp[0][1] = pixel[i][j];
-                temp[0][2] = pixel[i][j];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j];
-                temp[2][0] = pixel[i + 1][j - 1];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i + 1][j];
-                teste = 1;
+
+
+            if(i==0 && j==0 && teste==0){
+                temp[0][0]=copia[i][j];
+                temp[0][1]=copia[i][j];
+                temp[0][2]=copia[i][j];
+                temp[1][0]=copia[i][j];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i][j];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i+1][j+1];
+                teste=1;
             }
-            if (i == (*a - 1) && j == 0 && teste == 0) {
-                temp[0][0] = pixel[i][j];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i - 1][j + 1];
-                temp[1][0] = pixel[i][j];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i][j];
-                temp[2][1] = pixel[i][j];
-                temp[2][2] = pixel[i][j];
-                teste = 1;
+
+            if(i==0 && j==(*l-1) && teste==0){
+                temp[0][0]=copia[i][j];
+                temp[0][1]=copia[i][j];
+                temp[0][2]=copia[i][j];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j];
+                temp[2][0]=copia[i+1][j-1];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i][j];
+                teste=1;
             }
-            if (i == (*a - 1) && j == (*l - 1) && teste == 0) {
-                temp[0][0] = pixel[i - 1][j - 1];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i][j];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j];
-                temp[2][0] = pixel[i][j];
-                temp[2][1] = pixel[i][j];
-                temp[2][2] = pixel[i][j];
-                teste = 1;
+
+            if(i==(*a-1) && j==0 && teste==0){
+                temp[0][0]=copia[i][j];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i-1][j+1];
+                temp[1][0]=copia[i][j];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i][j];
+                temp[2][1]=copia[i][j];
+                temp[2][2]=copia[i][j];
+                teste=1;
             }
-            if (i == 0 && teste == 0) {
-                temp[0][0] = pixel[i][j];
-                temp[0][1] = pixel[i][j];
-                temp[0][2] = pixel[i][j];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i + 1][j - 1];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i + 1][j + 1];
-                teste = 1;
+
+            if(i==(*a-1) && j==(*l-1) && teste==0){
+                temp[0][0]=copia[i-1][j-1];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i][j];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j];
+                temp[2][0]=copia[i][j];
+                temp[2][1]=copia[i][j];
+                temp[2][2]=copia[i][j];
+                teste=1;
             }
-            if (i == (*a - 1) && teste == 0) {
-                temp[0][0] = pixel[i - 1][j - 1];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i - 1][j + 1];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i][j];
-                temp[2][1] = pixel[i][j];
-                temp[2][2] = pixel[i][j];
-                teste = 1;
+
+            if(i==0 && teste==0){
+                temp[0][0]=copia[i][j];
+                temp[0][1]=copia[i][j];
+                temp[0][2]=copia[i][j];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i+1][j-1];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i+1][j+1];
+                teste=1;
             }
-            if (j == 0 && teste == 0) {
-                temp[0][0] = pixel[i][j];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i - 1][j + 1];
-                temp[1][0] = pixel[i][j];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i][j];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i + 1][j + 1];
-                teste = 1;
+
+            if(i==(*a-1) && teste==0){
+                temp[0][0]=copia[i-1][j-1];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i-1][j+1];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i][j];
+                temp[2][1]=copia[i][j];
+                temp[2][2]=copia[i][j];
+                teste=1;
             }
-            if (j == (*l - 1) && teste == 0) {
-                temp[0][0] = pixel[i - 1][j - 1];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i][j];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j];
-                temp[2][0] = pixel[i + 1][j - 1];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i][j];
-                teste = 1;
+
+            if(j==0 && teste==0){
+                temp[0][0]=copia[i][j];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i-1][j+1];
+                temp[1][0]=copia[i][j];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i][j];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i+1][j+1];
+                teste=1;
+
             }
-            if (teste != 1) {
-                temp[0][0] = pixel[i - 1][j - 1];
-                temp[0][1] = pixel[i - 1][j];
-                temp[0][2] = pixel[i - 1][j + 1];
-                temp[1][0] = pixel[i][j - 1];
-                temp[1][1] = pixel[i][j];
-                temp[1][2] = pixel[i][j + 1];
-                temp[2][0] = pixel[i + 1][j - 1];
-                temp[2][1] = pixel[i + 1][j];
-                temp[2][2] = pixel[i + 1][j + 1];
-                teste = 1;
+
+            if(j==(*l-1) && teste==0){
+                temp[0][0]=copia[i-1][j-1];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i][j];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j];
+                temp[2][0]=copia[i+1][j-1];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i][j];
+                teste=1;
             }
-            //printf("%d %d %d\n",temp[1][1].r,temp[1][1].g,temp[1][1].b);
-            pixel[i][j].r = (temp[0][0].r * mult[0][0] + temp[0][1].r * mult[0][1] + temp[0][2].r * mult[0][2] +
-                             temp[1][0].r * mult[1][0] + temp[1][1].r * mult[1][1] + temp[1][2].r * mult[1][2] +
-                             temp[2][0].r * mult[2][0] + temp[2][1].r * mult[2][1] + temp[2][2].r * mult[2][2]) /
-                            (mult[0][0] + mult[0][1] + mult[0][2] + mult[1][0] + mult[1][1] + mult[1][2] + mult[2][0] +
-                             mult[2][1] + mult[2][2]);
-            pixel[i][j].g = (temp[0][0].g * mult[0][0] + temp[0][1].g * mult[0][1] + temp[0][2].g * mult[0][2] +
-                             temp[1][0].g * mult[1][0] + temp[1][1].g * mult[1][1] + temp[1][2].g * mult[1][2] +
-                             temp[2][0].g * mult[2][0] + temp[2][1].g * mult[2][1] + temp[2][2].g * mult[2][2]) /
-                            (mult[0][0] + mult[0][1] + mult[0][2] + mult[1][0] + mult[1][1] + mult[1][2] + mult[2][0] +
-                             mult[2][1] + mult[2][2]);
-            pixel[i][j].b = (temp[0][0].b * mult[0][0] + temp[0][1].b * mult[0][1] + temp[0][2].b * mult[0][2] +
-                             temp[1][0].b * mult[1][0] + temp[1][1].b * mult[1][1] + temp[1][2].b * mult[1][2] +
-                             temp[2][0].b * mult[2][0] + temp[2][1].b * mult[2][1] + temp[2][2].b * mult[2][2]) /
-                            (mult[0][0] + mult[0][1] + mult[0][2] + mult[1][0] + mult[1][1] + mult[1][2] + mult[2][0] +
-                             mult[2][1] + mult[2][2]);
-            teste = 0;
+
+            if(teste == 0){
+                temp[0][0]=copia[i-1][j-1];
+                temp[0][1]=copia[i-1][j];
+                temp[0][2]=copia[i-1][j+1];
+                temp[1][0]=copia[i][j-1];
+                temp[1][1]=copia[i][j];
+                temp[1][2]=copia[i][j+1];
+                temp[2][0]=copia[i+1][j-1];
+                temp[2][1]=copia[i+1][j];
+                temp[2][2]=copia[i+1][j+1];
+            }
+            pixel[i][j].r=(temp[0][0].r*matrix[0][0]+temp[0][1].r*matrix[0][1]+temp[0][2].r*matrix[0][2]+temp[1][0].r*matrix[1][0]+temp[1][1].r*matrix[1][1]+temp[1][2].r*matrix[1][2]+temp[2][0].r*matrix[2][0]+temp[2][1].r*matrix[2][1]+temp[2][2].r*matrix[2][2]);
+            pixel[i][j].g=(temp[0][0].g*matrix[0][0]+temp[0][1].g*matrix[0][1]+temp[0][2].g*matrix[0][2]+temp[1][0].g*matrix[1][0]+temp[1][1].g*matrix[1][1]+temp[1][2].g*matrix[1][2]+temp[2][0].g*matrix[2][0]+temp[2][1].g*matrix[2][1]+temp[2][2].g*matrix[2][2]);
+            pixel[i][j].b=(temp[0][0].b*matrix[0][0]+temp[0][1].b*matrix[0][1]+temp[0][2].b*matrix[0][2]+temp[1][0].b*matrix[1][0]+temp[1][1].b*matrix[1][1]+temp[1][2].b*matrix[1][2]+temp[2][0].b*matrix[2][0]+temp[2][1].b*matrix[2][1]+temp[2][2].b*matrix[2][2]);
+            teste=0;
         }
     }
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            if (pixel[i][j].r < 0) {
-                pixel[i][j].r = 0;
+    for(i=0;i<*a;i++){
+        for(j=0;j<*l;j++){
+            if(pixel[i][j].r<0){
+                pixel[i][j].r=0;
             }
-            if (pixel[i][j].g < 0) {
-                pixel[i][j].g = 0;
+            if(pixel[i][j].g<0){
+                pixel[i][j].g=0;
             }
-            if (pixel[i][j].b < 0) {
-                pixel[i][j].b = 0;
+            if(pixel[i][j].b<0){
+                pixel[i][j].b=0;
             }
-            if (pixel[i][j].r > *m) {
-                pixel[i][j].r = *m;
+            if(pixel[i][j].r>*m){
+                pixel[i][j].r=*m;
             }
-            if (pixel[i][j].g > *m) {
-                pixel[i][j].g = *m;
+            if(pixel[i][j].g>*m){
+                pixel[i][j].g=*m;
             }
-            if (pixel[i][j].b > *m) {
-                pixel[i][j].b = *m;
+            if(pixel[i][j].b>*m){
+                pixel[i][j].b=*m;
             }
         }
     }
+
 }
 
 void aumentar_brilho(Pixel **pixel, int *a, int *l, int *m) {
