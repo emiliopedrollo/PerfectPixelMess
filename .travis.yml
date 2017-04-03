@@ -2,10 +2,9 @@ dist: trusty
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - sourceline: 'ppa:jotik/cmake'
     packages:
-    - gcc-4.8
-    - g++-4.8
+      - cmake
 before_install:
   - sudo add-apt-repository ppa:jotik/cmake
   - sudo apt-get update
