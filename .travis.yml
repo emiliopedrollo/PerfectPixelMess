@@ -2,6 +2,6 @@ dist: trusty
 before_script:
   - wget https://cmake.org/files/v3.6/cmake-3.6.3-Linux-x86_64.tar.gz -O /tmp/cmake.tar.gz
   - tar -xvf /tmp/cmake.tar.gz
-  - export PATH=$PATH:$PWD/cmake-3.6.3-Linux-x86_64/bin/
+  - export PATH=$PWD/cmake-3.6.3-Linux-x86_64/bin/:$PATH
 language: c
 script: cmake . && make
