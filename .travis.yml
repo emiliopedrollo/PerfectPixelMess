@@ -5,10 +5,5 @@ addons:
       - sourceline: 'ppa:jotik/cmake'
     packages:
       - cmake
-before_install:
-  - sudo add-apt-repository ppa:jotik/cmake
-  - sudo apt-get update
-  - sudo apt-get install cmake
-language: 
-  c
+language: c
 script: cmake . && make
