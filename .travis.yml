@@ -1,9 +1,7 @@
 dist: trusty
-addons:
-  apt:
-    sources:
-      - sourceline: 'ppa:jotik/cmake'
-    packages:
-      - cmake
+install:
+  - wget https://cmake.org/files/v3.6/cmake-3.6.3.tar.gz
+  - tar -xzvf cmake-3.6.3.tar.gz
+  - pushd cmake-3.6.3 && ./configure --prefix=/usr && make && sudo make install && popd
 language: c
 script: cmake . && make
