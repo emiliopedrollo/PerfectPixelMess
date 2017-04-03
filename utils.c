@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 char** str_split(char* a_str, const char a_delim)
 {

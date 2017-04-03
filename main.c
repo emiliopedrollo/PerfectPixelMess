@@ -3,13 +3,14 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <limits.h>
 #include "main.h"
 #include "utils.h"
 #include "lists.h"
 #include "image.h"
 
 FilterDef *extractFilterDef(char* argument);
-Image *convolution_matrix(Image *image);
+void convolution_matrix(Image **image);
 void display_usage();
 
 void print_filter(void *pVoid);
@@ -93,7 +94,7 @@ int main (int argc, char *argv[]) {
         fclose(in_file);
     }
 
-    convolution_matrix(image);
+    convolution_matrix(&image);
 
     //negative(pixel,&a,&l,&m);
 
@@ -190,31 +191,52 @@ void negative(Image *image) {
     }
 }
 
-Image *convolution_matrix(Image *image) {
+void convolution_matrix(Image **image) {
     Image* copy;
-    int matrix[3][3],i,j,x,y,t,r;
-    int matrix_size = 3;
+    short matrix[5][5];
+    int i,j,x,y,t,r;
+    int matrix_size = 5;
     int total_weight = 0;
     int matrix_offset;
-    float matrix_multiplier = 1/9;
+    float matrix_multiplier = (float)1/25;
 
     struct {
-        unsigned char r;
-        unsigned char g;
-        unsigned char b;
+        short r;
+        short g;
+        short b;
     } current_bright;
 
-    copy = copy_image(image);
+    copy = copy_image(*image);
 
     matrix[0][0] =  1;
     matrix[0][1] =  1;
     matrix[0][2] =  1;
+    matrix[0][3] =  1;
+    matrix[0][4] =  1;
+
     matrix[1][0] =  1;
     matrix[1][1] =  1;
     matrix[1][2] =  1;
+    matrix[1][3] =  1;
+    matrix[1][4] =  1;
+
     matrix[2][0] =  1;
     matrix[2][1] =  1;
     matrix[2][2] =  1;
+    matrix[2][3] =  1;
+    matrix[2][4] =  1;
+
+    matrix[3][0] =  1;
+    matrix[3][1] =  1;
+    matrix[3][2] =  1;
+    matrix[3][3] =  1;
+    matrix[3][4] =  1;
+
+    matrix[4][0] =  1;
+    matrix[4][1] =  1;
+    matrix[4][2] =  1;
+    matrix[4][3] =  1;
+    matrix[4][4] =  1;
 
     matrix_offset = matrix_size/2;
 
@@ -224,8 +246,8 @@ Image *convolution_matrix(Image *image) {
 
 
 
-    for (i=0;i<image->height;i++) {
-        for (j=0;j<image->width;j++) {
+    for (i=0;i<(*image)->height;i++) {
+        for (j=0;j<(*image)->width;j++) {
 
             current_bright.r = 0;
             current_bright.g = 0;
@@ -236,12 +258,12 @@ Image *convolution_matrix(Image *image) {
                     t = (x - matrix_offset);
                     r = (y - matrix_offset);
 
-                    if (i + t < 0 || i + t > image->height - 1) t = 0;
-                    if (j + r < 0 || j + r > image->width  - 1) t = 0;
+                    if (i + t < 0 || i + t > (*image)->height - 1) t = 0;
+                    if (j + r < 0 || j + r > (*image)->width  - 1) t = 0;
 
-                    current_bright.r += image->matrix[i+t][j+r].r * matrix[x][y];
-                    current_bright.g += image->matrix[i+t][j+r].g * matrix[x][y];
-                    current_bright.b += image->matrix[i+t][j+r].b * matrix[x][y];
+                    current_bright.r += (*image)->matrix[i+t][j+r].r * matrix[x][y];
+                    current_bright.g += (*image)->matrix[i+t][j+r].g * matrix[x][y];
+                    current_bright.b += (*image)->matrix[i+t][j+r].b * matrix[x][y];
 
                 }
             }
@@ -250,16 +272,23 @@ Image *convolution_matrix(Image *image) {
             current_bright.g *= matrix_multiplier;
             current_bright.b *= matrix_multiplier;
 
-            copy->matrix[i][j].r = current_bright.r;
-            copy->matrix[i][j].g = current_bright.g;
-            copy->matrix[i][j].b = current_bright.b;
+            copy->matrix[i][j].r = (current_bright.r < 0)? (uint8_t) 0 :
+                                   (current_bright.r > (*image)->max_bright)? (*image)->max_bright :
+                                   (uint8_t) current_bright.r;
+
+            copy->matrix[i][j].g = (current_bright.g < 0)? (uint8_t) 0 :
+                                   (current_bright.g > (*image)->max_bright)? (*image)->max_bright :
+                                   (uint8_t) current_bright.g;
+
+            copy->matrix[i][j].b = (current_bright.b < 0)? (uint8_t) 0 :
+                                   (current_bright.b > (*image)->max_bright)? (*image)->max_bright :
+                                   (uint8_t) current_bright.b;
 
         }
     }
 
-    free_image(image);
-    memmove(image,copy,sizeof(Image));
-    return copy;
+    free_image(*image);
+    *image = copy;
 }
 
 void aumentar_brilho(Pixel **pixel, int *a, int *l, int *m) {
