@@ -1,0 +1,5 @@
+before_install:
+  - sudo apt-get install cmake
+language: 
+  c
+install: cmake && make
