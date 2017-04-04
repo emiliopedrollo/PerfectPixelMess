@@ -3,6 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <strings.h>
 #include "main.h"
 #include "utils.h"
 #include "lists.h"
@@ -65,7 +66,7 @@ int main (int argc, char *argv[]) {
                 }
                 free(tokens);
 
-                list_print(filters, print_filter);
+//                list_print(filters, print_filter);
                 break;
             case 'h':
             case '?':
@@ -96,31 +97,38 @@ int main (int argc, char *argv[]) {
     while(filters != NULL) {
         if (filters->content != NULL){
 
-            if (strcmp(((FilterDef*)(filters->content))->name,"TEST")){
-                convolution_matrix(&image,get_test_matrix());
-            } else if (strcmp(((FilterDef*)(filters->content))->name,"BLUR")){
-                convolution_matrix(&image,get_blur_matrix());
-            } else if (strcmp(((FilterDef*)(filters->content))->name,"EBLUR")){
-                convolution_matrix(&image,get_extra_blur_matrix());
-            } else if (strcmp(((FilterDef*)(filters->content))->name,"REALCE")){
-                convolution_matrix(&image,get_reacle_matrix());
-            } else if (strcmp(((FilterDef*)(filters->content))->name,"BORDER")){
-                convolution_matrix(&image,get_border_detect_matrix());
-            } else if (strcmp(((FilterDef*)(filters->content))->name,"SHARP")){
-                convolution_matrix(&image,get_sharp_matrix());
+            // Simple Filters
+            if (strcasecmp(((FilterDef*)(filters->content))->name,"INVERT") == 0) {
+                invert(&image);
             }
+
+
+            // Convolution Matrix Filters
+            else if (strcasecmp(((FilterDef*)(filters->content))->name,"TEST") == 0){
+                convolution_matrix(&image,get_test_matrix());
+
+            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"BLUR") == 0){
+                convolution_matrix(&image,get_blur_matrix());
+
+            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"EBLUR") == 0){
+                convolution_matrix(&image,get_extra_blur_matrix());
+
+            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"REALCE") == 0){
+                convolution_matrix(&image,get_reacle_matrix());
+
+            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"BORDER") == 0){
+                convolution_matrix(&image,get_border_detect_matrix());
+
+            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"SHARP") == 0){
+                convolution_matrix(&image,get_sharp_matrix());
+
+            }
+
 
         }
         filters = filters->next;
     }
 
-    //negative(pixel,&a,&l,&m);
-
-    //aumentar_brilho(pixel,&a,&l,&m);
-
-//    diminuir_brilho(pixel, &a, &l, &m);
-
-    //convolution_matrix(pixel ,&a, &l,&m);
 
 
     if (output_to_stdout){
@@ -231,32 +239,6 @@ void aumentar_brilho(Pixel **pixel, int *a, int *l, int *m) {
             }
             if (pixel[i][j].b > *m) {
                 pixel[i][j].b = *m;
-            }
-        }
-    }
-}
-
-void diminuir_brilho(Pixel **pixel, int *a, int *l, int *m) {
-    int i, j;
-
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            pixel[i][j].r = pixel[i][j].r - 60;
-            pixel[i][j].g = pixel[i][j].g - 60;
-            pixel[i][j].b = pixel[i][j].b - 60;
-        }
-    }
-
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            if (pixel[i][j].r < 0) {
-                pixel[i][j].r = 0;
-            }
-            if (pixel[i][j].g < 0) {
-                pixel[i][j].g = 0;
-            }
-            if (pixel[i][j].b < 0) {
-                pixel[i][j].b = 0;
             }
         }
     }

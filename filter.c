@@ -4,6 +4,7 @@
 
 #include <elf.h>
 #include "filter.h"
+#include "image.h"
 
 void convolution_matrix(Image **image, ConvolutionMatrix filter) {
     Image* copy;
@@ -70,4 +71,23 @@ void convolution_matrix(Image **image, ConvolutionMatrix filter) {
 
     free_image(*image);
     *image = copy;
+}
+
+
+void invert(Image **image){
+
+    int i,j;
+
+    for (i=0;i<(*image)->height;i++){
+        for (j=0;j<(*image)->width;j++){
+            (*image)->matrix[i][j].r = (*image)->max_bright - (*image)->matrix[i][j].r;
+            (*image)->matrix[i][j].g = (*image)->max_bright - (*image)->matrix[i][j].g;
+            (*image)->matrix[i][j].b = (*image)->max_bright - (*image)->matrix[i][j].b;
+        }
+    }
+
+}
+
+void rotate(Image **image,short angle){
+
 }

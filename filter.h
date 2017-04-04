@@ -10,6 +10,7 @@
 #ifndef PERFECTPIXELMESS_FILTER_H
 
 void convolution_matrix(Image **image, ConvolutionMatrix filter);
+void invert(Image **image);
 
 #define PERFECTPIXELMESS_FILTER_H
 
