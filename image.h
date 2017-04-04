@@ -3,6 +3,8 @@
 //
 
 #include "main.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 #ifndef PERFECTPIXELMESS_IMAGE_H
 
