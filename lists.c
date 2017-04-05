@@ -3,12 +3,7 @@
 #include "lists.h"
 
 Node *list_new(){
-    Node *list;
-    list = malloc(sizeof(Node));
-    list->content = NULL;
-    list->next = NULL;
-    list->prev = NULL;
-    return list;
+    return NULL;
 }
 
 void list_insert(Node *current, void *content) {
