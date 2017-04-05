@@ -13,16 +13,15 @@ typedef struct {
 typedef struct {
     short** matrix;
     unsigned char matrix_size;
-    float multiplier;
+    double multiplier;
 } ConvolutionMatrix;
 
 void free_matrix(short **matrix,unsigned char matrix_size);
 ConvolutionMatrix get_test_matrix();
-ConvolutionMatrix get_blur_matrix();
-ConvolutionMatrix get_extra_blur_matrix();
+ConvolutionMatrix get_blur_matrix(char sample_size);
 ConvolutionMatrix get_border_detect_matrix();
 ConvolutionMatrix get_sharp_matrix();
-ConvolutionMatrix get_reacle_matrix();
+ConvolutionMatrix get_enhance_matrix();
 
 #define PERFECTPIXELMESS_CONV_MAT_H
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lists.h"
-#include "main.h"
 
 Node *list_new(){
     Node *list;
@@ -10,12 +9,6 @@ Node *list_new(){
     list->next = NULL;
     list->prev = NULL;
     return list;
-}
-
-void list_rewind(Node *current) {
-    while(current->prev != NULL) {
-        current = current->prev;
-    }
 }
 
 void list_insert(Node *current, void *content) {
@@ -62,10 +55,19 @@ void list_delete(Node *current, void *content){
 
     return;
 }
-void list_print(Node *current, void (*fun)(void *)) {
+
+void list_each(Node *current, void (*fun)(void *)) {
     while(current != NULL) {
         if (current->content != NULL)
-           fun(current->content);
+            fun(current->content);
+        current = current->next;
+    }
+}
+
+void list_each_extra(Node *current, void (*fun)(void *, void *), void *extra_arg) {
+    while(current != NULL) {
+        if (current->content != NULL)
+           fun(current->content,extra_arg);
         current = current->next;
     }
 }

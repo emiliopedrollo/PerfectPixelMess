@@ -3,8 +3,6 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
-#include <strings.h>
-#include "main.h"
 #include "utils.h"
 #include "lists.h"
 #include "image.h"
@@ -15,7 +13,7 @@ FilterDef *extractFilterDef(char* argument);
 void convolution_matrix(Image **image, ConvolutionMatrix filter);
 void display_usage();
 
-void print_filter(void *pVoid);
+void call_apply_filter(void *filter, void *image);
 
 int main (int argc, char *argv[]) {
 
@@ -65,8 +63,6 @@ int main (int argc, char *argv[]) {
                     free(*(tokens + i));
                 }
                 free(tokens);
-
-//                list_print(filters, print_filter);
                 break;
             case 'h':
             case '?':
@@ -93,43 +89,7 @@ int main (int argc, char *argv[]) {
         fclose(in_file);
     }
 
-
-    while(filters != NULL) {
-        if (filters->content != NULL){
-
-            // Simple Filters
-            if (strcasecmp(((FilterDef*)(filters->content))->name,"INVERT") == 0) {
-                invert(&image);
-            }
-
-
-            // Convolution Matrix Filters
-            else if (strcasecmp(((FilterDef*)(filters->content))->name,"TEST") == 0){
-                convolution_matrix(&image,get_test_matrix());
-
-            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"BLUR") == 0){
-                convolution_matrix(&image,get_blur_matrix());
-
-            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"EBLUR") == 0){
-                convolution_matrix(&image,get_extra_blur_matrix());
-
-            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"REALCE") == 0){
-                convolution_matrix(&image,get_reacle_matrix());
-
-            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"BORDER") == 0){
-                convolution_matrix(&image,get_border_detect_matrix());
-
-            } else if (strcasecmp(((FilterDef*)(filters->content))->name,"SHARP") == 0){
-                convolution_matrix(&image,get_sharp_matrix());
-
-            }
-
-
-        }
-        filters = filters->next;
-    }
-
-
+    list_each_extra(filters, call_apply_filter, &image);
 
     if (output_to_stdout){
         output(stdout,image);
@@ -142,20 +102,8 @@ int main (int argc, char *argv[]) {
     exit(0);
 }
 
-void print_filter(void *pVoid) {
-    FilterDef *filter;
-    int i;
-
-    filter = (FilterDef*) pVoid;
-    printf("Filter: %s\n", filter->name);
-    if (filter->params != NULL) {
-        printf("Params: ");
-        for (i = 0; *(filter->params + i); i++) {
-            printf("%s ", *(filter->params + i));
-        }
-        printf("\n");
-    }
-    printf("\n");
+void call_apply_filter(void *filter, void *image){
+    apply_filter((FilterDef *) filter, (Image **) image);
 }
 
 FilterDef *extractFilterDef(char* argument){
@@ -173,10 +121,6 @@ FilterDef *extractFilterDef(char* argument){
         filter->name = *tokens;
         params_raw = malloc((sizeof *(tokens+1))+1);
         strcpy(params_raw,*(tokens+1));
-
-//        if (countChars(params_raw,';') > 1)
-//            topntail(params_raw);
-
         filter->params = str_split(params_raw,';');
     }
 
@@ -201,45 +145,4 @@ void display_usage() {
     "  BRI=INT    Changes the bright of the image. INT is the intensity of the filter, must be\n"
     "               between -255 and 255.\n"
     "\n");
-}
-
-
-
-
-void negative(Image *image) {
-    int i, j;
-    for (i = 0; i < image->height; i++) {
-        for (j = 0; j < image->width; j++) {
-            image->matrix[i][j].r = image->max_bright - image->matrix[i][j].r;
-            image->matrix[i][j].g = image->max_bright - image->matrix[i][j].g;
-            image->matrix[i][j].b = image->max_bright - image->matrix[i][j].b;
-        }
-    }
-}
-
-
-void aumentar_brilho(Pixel **pixel, int *a, int *l, int *m) {
-    int i, j;
-
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            pixel[i][j].r = pixel[i][j].r + 60;
-            pixel[i][j].g = pixel[i][j].g + 60;
-            pixel[i][j].b = pixel[i][j].b + 60;
-        }
-    }
-
-    for (i = 0; i < *a; i++) {
-        for (j = 0; j < *l; j++) {
-            if (pixel[i][j].r > *m) {
-                pixel[i][j].r = *m;
-            }
-            if (pixel[i][j].g > *m) {
-                pixel[i][j].g = *m;
-            }
-            if (pixel[i][j].b > *m) {
-                pixel[i][j].b = *m;
-            }
-        }
-    }
 }

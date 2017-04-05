@@ -2,7 +2,6 @@
 // Created by ncc on 30/03/17.
 //
 
-#include "main.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -24,6 +23,7 @@ typedef struct {
 Image *load_image(FILE *stream);
 bool output(FILE *stream, Image *image);
 Image *copy_image(Image *image);
+Image *new_image(int height,int width, unsigned char max_bright);
 void free_image(Image* image);
 
 #define PERFECTPIXELMESS_IMAGE_H

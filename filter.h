@@ -9,8 +9,12 @@
 
 #ifndef PERFECTPIXELMESS_FILTER_H
 
+void apply_filter(FilterDef *filter, Image **image);
 void convolution_matrix(Image **image, ConvolutionMatrix filter);
 void invert(Image **image);
+void rotate(Image **image,short angle);
+void flip(Image **image);
+void mirror(Image **image);
 
 #define PERFECTPIXELMESS_FILTER_H
 

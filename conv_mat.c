@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <math.h>
 #include "conv_mat.h"
 
 void free_matrix(short **matrix,unsigned char matrix_size){
@@ -62,62 +63,18 @@ ConvolutionMatrix get_test_matrix(){
     return convolution;
 }
 
-ConvolutionMatrix get_blur_matrix(){
+ConvolutionMatrix get_blur_matrix(char sample_size) {
+    int i,j;
     ConvolutionMatrix convolution;
-    convolution.multiplier = (float) 1/9;
-    convolution.matrix_size = 3;
+    convolution.matrix_size = (unsigned char)((sample_size*2)+1);
+    convolution.multiplier = (double) 1/pow((double)convolution.matrix_size,(double)2.0) ;
     convolution.matrix = generate_matrix(convolution.matrix_size);
 
-    convolution.matrix[0][0] = 1;
-    convolution.matrix[0][1] = 1;
-    convolution.matrix[0][2] = 1;
-
-    convolution.matrix[1][0] = 1;
-    convolution.matrix[1][1] = 1;
-    convolution.matrix[1][2] = 1;
-
-    convolution.matrix[2][0] = 1;
-    convolution.matrix[2][1] = 1;
-    convolution.matrix[2][2] = 1;
-
-    return convolution;
-}
-
-ConvolutionMatrix get_extra_blur_matrix(){
-    ConvolutionMatrix convolution;
-    convolution.multiplier = (float) 1/25;
-    convolution.matrix_size = 5;
-    convolution.matrix = generate_matrix(convolution.matrix_size);
-
-    convolution.matrix[0][0] = 1;
-    convolution.matrix[0][1] = 1;
-    convolution.matrix[0][2] = 1;
-    convolution.matrix[0][3] = 1;
-    convolution.matrix[0][4] = 1;
-
-    convolution.matrix[1][0] = 1;
-    convolution.matrix[1][1] = 1;
-    convolution.matrix[1][2] = 1;
-    convolution.matrix[1][3] = 1;
-    convolution.matrix[1][4] = 1;
-
-    convolution.matrix[2][0] = 1;
-    convolution.matrix[2][1] = 1;
-    convolution.matrix[2][2] = 1;
-    convolution.matrix[2][3] = 1;
-    convolution.matrix[2][4] = 1;
-
-    convolution.matrix[3][0] = 1;
-    convolution.matrix[3][1] = 1;
-    convolution.matrix[3][2] = 1;
-    convolution.matrix[3][3] = 1;
-    convolution.matrix[3][4] = 1;
-
-    convolution.matrix[4][0] = 1;
-    convolution.matrix[4][1] = 1;
-    convolution.matrix[4][2] = 1;
-    convolution.matrix[4][3] = 1;
-    convolution.matrix[4][4] = 1;
+    for(i=0;i<convolution.matrix_size;i++){
+        for(j=0;j<convolution.matrix_size;j++) {
+            convolution.matrix[i][j] = 1;
+        }
+    }
 
     return convolution;
 }
@@ -164,7 +121,7 @@ ConvolutionMatrix get_sharp_matrix(){
     return convolution;
 }
 
-ConvolutionMatrix get_reacle_matrix(){
+ConvolutionMatrix get_enhance_matrix(){
     ConvolutionMatrix convolution;
     convolution.multiplier = 1;
     convolution.matrix_size = 3;

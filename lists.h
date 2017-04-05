@@ -2,8 +2,6 @@
 // Created by Emilio B. Pedrollo on 29/03/2017.
 //
 
-#include "main.h"
-
 #ifndef PERFECTPIXELMESS_LISTS_H
 
 typedef struct Node {
@@ -15,8 +13,8 @@ typedef struct Node {
 Node *list_new();
 void list_insert(Node *current, void *content);
 void list_delete(Node *current, void *content);
-void list_print(Node *current, void (*fun)(void *));
-void list_rewind(Node *current);
+void list_each(Node *current, void (*fun)(void *));
+void list_each_extra(Node *current, void (*fun)(void *, void *), void *extra_arg);
 int list_find(Node *current, void *content);
 
 #define PERFECTPIXELMESS_LISTS_H

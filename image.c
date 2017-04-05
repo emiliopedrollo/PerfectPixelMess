@@ -5,7 +5,8 @@
 #include "image.h"
 
 Image *load_image(FILE *stream) {
-    int i, j;
+    int i, j, width, height;
+    unsigned char max_bright;
 
     Image *image = NULL;
 
@@ -21,13 +22,12 @@ Image *load_image(FILE *stream) {
             exit(EXIT_FAILURE);
         }
 
-        image = malloc(sizeof (Image));
-        fscanf(stream, "%d %d\n", &image->width, &image->height);
-        fscanf(stream, "%hhu\n", &image->max_bright);
+        fscanf(stream, "%d %d\n", &width, &height);
+        fscanf(stream, "%hhu\n", &max_bright);
 
-        image->matrix = (Pixel**) malloc(image->height * sizeof(Pixel*));
+        image = new_image(height,width,max_bright);
+
         for (i=0;i<image->height;i++){
-            image->matrix[i] = (Pixel*) malloc(image->width * sizeof(Pixel));
             for (j=0;j<image->width;j++){
                 fscanf(stream, "%hhu", &image->matrix[i][j].r);
                 fscanf(stream, "%hhu", &image->matrix[i][j].g);
@@ -65,14 +65,9 @@ Image *copy_image(Image *image){
     int i,j;
     Image *copy;
 
-    copy = malloc(sizeof(Image));
-    copy->max_bright = image->max_bright;
-    copy->width = image->width;
-    copy->height = image->height;
+    copy = new_image(image->height,image->width,image->max_bright);
 
-    copy->matrix = (Pixel**) malloc(copy->height * sizeof(Pixel*));
     for (i=0;i<image->height;i++){
-        copy->matrix[i] = (Pixel*) malloc(copy->width * sizeof(Pixel));
         for (j=0;j<image->width;j++){
             copy->matrix[i][j].r = image->matrix[i][j].r;
             copy->matrix[i][j].g = image->matrix[i][j].g;
@@ -82,6 +77,24 @@ Image *copy_image(Image *image){
 
     return copy;
 
+}
+
+
+Image *new_image(int height,int width, unsigned char max_bright){
+    int i;
+    Image* image;
+    image = malloc(sizeof(Image));
+    image->height = height;
+    image->width = width;
+    image->max_bright = max_bright;
+
+
+    image->matrix = (Pixel**) malloc(image->height * sizeof(Pixel*));
+    for (i=0;i<image->height;i++){
+        image->matrix[i] = (Pixel*) malloc(image->width * sizeof(Pixel));
+    }
+
+    return image;
 }
 
 void free_image(Image* image){
