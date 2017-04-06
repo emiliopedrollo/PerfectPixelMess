@@ -12,7 +12,7 @@
 FilterDef *extractFilterDef(char* argument);
 void convolution_matrix(Image **image, ConvolutionMatrix filter);
 void display_usage();
-
+void print_filter(void *pVoid);
 void call_apply_filter(void *filter, void *image);
 
 int main (int argc, char *argv[]) {
@@ -81,6 +81,13 @@ int main (int argc, char *argv[]) {
         exit(EXIT_SUCCESS);
     }
 
+
+    list_each(filters, print_filter);
+    list_delete(&filters,(filters)->content);
+    list_each(filters, print_filter);
+
+    exit(EXIT_SUCCESS);
+
     if (read_from_stdin){
         image = load_image(stdin);
     } else {
@@ -88,6 +95,7 @@ int main (int argc, char *argv[]) {
         image = load_image(in_file);
         fclose(in_file);
     }
+
 
     list_each_extra(filters, call_apply_filter, &image);
 
@@ -100,6 +108,22 @@ int main (int argc, char *argv[]) {
     }
 
     exit(0);
+}
+
+void print_filter(void *pVoid) {
+    FilterDef *filter;
+    int i;
+
+    filter = (FilterDef*) pVoid;
+    printf("Filter: %s\n", filter->name);
+    if (filter->params != NULL) {
+        printf("Params: ");
+        for (i = 0; *(filter->params + i); i++) {
+            printf("%s ", *(filter->params + i));
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
 
 void call_apply_filter(void *filter, void *image){

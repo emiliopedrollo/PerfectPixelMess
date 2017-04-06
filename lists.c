@@ -58,14 +58,12 @@ Node *list_find(Node *current, void *content) {
         current = current->next;
     }
     return NULL;
-
-
-    list_delete(&current,"12");
 }
 
 bool list_delete(Node **current, void *content){
 
-    Node **aux = current;
+    Node *aux = (*current);
+    Node *aux2 = NULL;
 
     *current = list_find(*current,content);
 
@@ -74,37 +72,27 @@ bool list_delete(Node **current, void *content){
     if ((*current)->next != NULL){
         ((*current)->next)->prev = (*current)->prev;
     } else {
+        aux2 = (*current)->prev;
 
     }
 
     if ((*current)->prev != NULL){
         ((*current)->prev)->next = (*current)->next;
     } else {
-        *current = (*current)->next;
+        aux2 = (*current)->next;
     }
 
-    free(aux);
-
-
-//    // The element is found in the node next to the one that current points to
-//    // We removed the node which is next to the pointer (which is also temp)
-//    Node *tmp = current->next;
-//    // In special case that we are deleting last node
-//    if(tmp->next == NULL) {
-//        current->next = NULL;
-//    } else {
-//        current->next = tmp->next;
-//        (current->next)->prev = tmp->prev;
-//    }
-//    tmp->prev = current;
-//
-//    // We got rid of the node, now time to dellocate the memory
-//    free(tmp);
-//
-//    return;
+    if (aux == *current){
+        free(*current);
+        *current = aux2;
+    } else {
+        free(*current);
+        *current = aux;
+    }
 }
 
 void list_each(Node *current, void (*fun)(void *)) {
+    current = list_first(current);
     while(current != NULL) {
         if (current->content != NULL)
             fun(current->content);
@@ -113,6 +101,7 @@ void list_each(Node *current, void (*fun)(void *)) {
 }
 
 void list_each_extra(Node *current, void (*fun)(void *, void *), void *extra_arg) {
+    current = list_first(current);
     while(current != NULL) {
         if (current->content != NULL)
            fun(current->content,extra_arg);
