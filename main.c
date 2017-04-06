@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
 
                 tokens = str_split(optarg,',');
                 for (i = 0; *(tokens + i); i++){
-                    list_insert(filters,extractFilterDef(*(tokens + i)));
+                    filters = list_insert(filters,extractFilterDef(*(tokens + i)));
                     free(*(tokens + i));
                 }
                 free(tokens);

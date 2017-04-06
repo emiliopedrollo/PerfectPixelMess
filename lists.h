@@ -2,6 +2,8 @@
 // Created by Emilio B. Pedrollo on 29/03/2017.
 //
 
+#include <stdbool.h>
+
 #ifndef PERFECTPIXELMESS_LISTS_H
 
 typedef struct Node {
@@ -10,12 +12,14 @@ typedef struct Node {
     struct Node *prev;
 } Node;
 
-Node *list_new();
-void list_insert(Node *current, void *content);
-void list_delete(Node *current, void *content);
+Node *list_new(void);
+Node *list_first(Node *current);
+Node *list_last(Node *current);
+Node *list_insert(Node *current, void *content);
+Node *list_find(Node *current, void *content);
+bool list_delete(Node **current, void *content);
 void list_each(Node *current, void (*fun)(void *));
 void list_each_extra(Node *current, void (*fun)(void *, void *), void *extra_arg);
-int list_find(Node *current, void *content);
 
 #define PERFECTPIXELMESS_LISTS_H
 
