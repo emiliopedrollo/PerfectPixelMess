@@ -12,7 +12,6 @@
 FilterDef *extractFilterDef(char* argument);
 void convolution_matrix(Image **image, ConvolutionMatrix filter);
 void display_usage();
-void print_filter(void *pVoid);
 void call_apply_filter(void *filter, void *image);
 
 int main (int argc, char *argv[]) {
@@ -101,22 +100,6 @@ int main (int argc, char *argv[]) {
     }
 
     exit(0);
-}
-
-void print_filter(void *pVoid) {
-    FilterDef *filter;
-    int i;
-
-    filter = (FilterDef*) pVoid;
-    printf("Filter: %s\n", filter->name);
-    if (filter->params != NULL) {
-        printf("Params: ");
-        for (i = 0; *(filter->params + i); i++) {
-            printf("%s ", *(filter->params + i));
-        }
-        printf("\n");
-    }
-    printf("\n");
 }
 
 void call_apply_filter(void *filter, void *image){
