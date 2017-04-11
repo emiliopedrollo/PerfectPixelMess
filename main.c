@@ -81,13 +81,6 @@ int main (int argc, char *argv[]) {
         exit(EXIT_SUCCESS);
     }
 
-
-    list_each(filters, print_filter);
-    list_delete(&filters,(filters)->content);
-    list_each(filters, print_filter);
-
-    exit(EXIT_SUCCESS);
-
     if (read_from_stdin){
         image = load_image(stdin);
     } else {
