@@ -75,8 +75,8 @@ void convolution_matrix(Image **image, ConvolutionMatrix filter) {
                     t = (x - matrix_offset);
                     r = (y - matrix_offset);
 
-                    if (i + t < 0 || i + t > (*image)->height - 1) t = 0;
-                    if (j + r < 0 || j + r > (*image)->width  - 1) r = 0;
+                    t = (i + t < 0 || i + t > (*image)->height - 1)? 0 : t;
+                    j = (j + r < 0 || j + r > (*image)->width  - 1)? 0 : r;
 
                     current_bright.r += (*image)->matrix[i+t][j+r].r * filter.matrix[x][y];
                     current_bright.g += (*image)->matrix[i+t][j+r].g * filter.matrix[x][y];
