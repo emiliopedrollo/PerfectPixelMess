@@ -14,6 +14,8 @@ void apply_filter(FilterDef *filter, Image **image){
         invert(image);
     } else if (strcasecmp(filter->name,"RGB") == 0){
         // TODO: implement RGB filter
+    } else if (strcasecmp(filter->name,"GREYSCALE") == 0){
+        // TODO: implement Greyscale filter
     }
 
     // Transform Filters
@@ -36,15 +38,13 @@ void apply_filter(FilterDef *filter, Image **image){
         } else {
             convolution_matrix(image, get_blur_matrix(1));
         }
-    } else if (strcasecmp(filter->name,"ENHANCE") == 0){
-        convolution_matrix(image,get_enhance_matrix());
-
     } else if (strcasecmp(filter->name,"BORDER") == 0){
         convolution_matrix(image,get_border_detect_matrix());
 
     } else if (strcasecmp(filter->name,"SHARP") == 0){
         convolution_matrix(image,get_sharp_matrix());
-
+    } else if (strcasecmp(filter->name,"CUSTOM") == 0){
+        // TODO: implements the custom matrix filter
     }
 }
 

@@ -34,6 +34,7 @@ int main (int argc, char *argv[]) {
             {"input",  required_argument, 0, 'i'},
             {"output", required_argument, 0, 'o'},
             {"filter", required_argument, 0, 'f'},
+            {"custom", required_argument, 0, 'c'},
             {"help",   no_argument      , 0, 'h'},
             {0,        0,                 0,  0 }
     };
@@ -62,6 +63,9 @@ int main (int argc, char *argv[]) {
                     free(*(tokens + i));
                 }
                 free(tokens);
+                break;
+            case 'c':
+                // TODO: reads the custom matrix
                 break;
             case 'h':
             case '?':
@@ -132,17 +136,27 @@ void display_usage() {
     "Apply filters to ppm images\n"
     "\n"
     "Mandatory arguments to long options are mandatory for short options too.\n"
-    "  -i --input=FILE            Use FILE as input stream. Otherwise ppm uses stdin.\n"
-    "  -o --output=FILE           Outputs resulted image to FILE. Otherwise prints to stdout.\n"
-    "  -f --filter=F1,F2=1;7      Sets the filter to use on the input image. Where F1 represent \n"
-    "                               one of the filters listed bellow, F2=1 represent another with 1\n"
-    "                               as an argument. Filters must be separated by commas. Arguments, \n"
-    "                               if more than one must be separated by semicolons.\n"
+    "  -i --input=FILE              Use FILE as input stream. Otherwise ppm uses stdin.\n"
+    "  -o --output=FILE             Outputs resulted image to FILE. Otherwise prints to stdout.\n"
+    "  -f --filter=F1,F2=1;7        Sets the filter to use on the input image. Where F1 represent \n"
+    "                                 one of the filters listed bellow, F2=1 represent another with 1\n"
+    "                                 as an argument. Filters must be separated by commas. Arguments, \n"
+    "                                 if more than one must be separated by semicolons.\n"
+    "  -c --custom=S=3,M=1;1;1...   Runs a custom user defined convolution matrix where S is the matrix\n"
+    "                                 size (must be an odd number) and M defines the matrix values\n"
+    "                                 separated by semicolons.\n"
     "\n"
     "\n"
     "The available filters are:\n"
-    "  INV        Inverts the image\n"
-    "  BRI=INT    Changes the bright of the image. INT is the intensity of the filter, must be\n"
-    "               between -255 and 255.\n"
+    "  INVERT       Inverts the image\n"
+    "  RGB=R[;G;B]  Color adjustment needs 1 or 3 integers ranging from -255 to 255 as parameter\n"
+    "  GREYSCALE    Converts a colored image to greyscale\n"
+    "  BRIGHT=M     Adjusts the bright of the image. M must be between -255 and 255.\n"
+    "  ROTATE=angle Rotates the image, acceptable angles are 90, 180, 270 and 360\n"
+    "  FLIP         Inverts the image upside down\n"
+    "  MIRROR       Inverts the image sideways\n"
+    "  BLUR[=S]     Blurs the image using a S size pixel matrix as sample\n"
+    "  BORDER       Border detection\n"
+    "  SHARP        Sharpens the image\n"
     "\n");
 }

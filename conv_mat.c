@@ -120,24 +120,3 @@ ConvolutionMatrix get_sharp_matrix(){
 
     return convolution;
 }
-
-ConvolutionMatrix get_enhance_matrix(){
-    ConvolutionMatrix convolution;
-    convolution.multiplier = 1;
-    convolution.matrix_size = 3;
-    convolution.matrix = generate_matrix(convolution.matrix_size);
-
-    convolution.matrix[0][0] = -1;
-    convolution.matrix[0][1] = -1;
-    convolution.matrix[0][2] = -1;
-
-    convolution.matrix[1][0] = -1;
-    convolution.matrix[1][1] = 9;
-    convolution.matrix[1][2] = -1;
-
-    convolution.matrix[2][0] = -1;
-    convolution.matrix[2][1] = -1;
-    convolution.matrix[2][2] = -1;
-
-    return convolution;
-}
