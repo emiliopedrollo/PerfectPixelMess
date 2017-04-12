@@ -206,7 +206,6 @@ void display_usage() {
     "  INVERT       Inverts the image\n"
     "  RGB=R[;G;B]  Color adjustment needs 1 or 3 integers ranging from -255 to 255 as parameter\n"
     "  GREYSCALE    Converts a colored image to greyscale\n"
-    "  BRIGHT=M     Adjusts the bright of the image. M must be between -255 and 255.\n"
     "  ROTATE=angle Rotates the image, acceptable angles are 90, 180, 270 and 360\n"
     "  FLIP         Inverts the image upside down\n"
     "  MIRROR       Inverts the image sideways\n"

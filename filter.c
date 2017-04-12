@@ -1,11 +1,11 @@
-//
-// Created by ebpedrollo on 03/04/17.
-//
-
 #include <elf.h>
 #include <strings.h>
 #include <stdlib.h>
 #include "filter.h"
+
+const int MAX_BRIGHT =  255;
+const int MIN_BRIGHT = -255;
+
 
 void apply_filter(FilterDef *filter, Image **image){
 
@@ -13,9 +13,15 @@ void apply_filter(FilterDef *filter, Image **image){
     if (strcasecmp(filter->name,"INVERT") == 0) {
         invert(image);
     } else if (strcasecmp(filter->name,"RGB") == 0){
-        // TODO: implement RGB filter
+        if (*(filter->params+1) != NULL && *(filter->params+2) != NULL){
+            rgb(image,
+                (short)atoi(filter->params[0]),
+                (short)atoi(filter->params[1]),
+                (short)atoi(filter->params[2])
+            );
+        } else brighten(image, (short)atoi(filter->params[0]));
     } else if (strcasecmp(filter->name,"GREYSCALE") == 0){
-        // TODO: implement Greyscale filter
+        greyscale(image);
     }
 
     // Transform Filters
@@ -43,6 +49,9 @@ void apply_filter(FilterDef *filter, Image **image){
 
     } else if (strcasecmp(filter->name,"SHARP") == 0){
         convolution_matrix(image,get_sharp_matrix());
+    } else {
+        fprintf(stderr,"%s: filter not recognized",filter->name);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -108,6 +117,70 @@ void convolution_matrix(Image **image, ConvolutionMatrix filter) {
     *image = copy;
 }
 
+void greyscale(Image **image){
+    const float r = 0.299F;
+    const float g = 0.587F;
+    const float b = 0.114F;
+
+    int i,j;
+
+    float c;
+
+    for (i=0;i<(*image)->height;i++){
+        for (j=0;j<(*image)->width;j++){
+
+            c = ((*image)->matrix[i][j].r*r)+((*image)->matrix[i][j].g*g)+((*image)->matrix[i][j].b*b);
+
+            (*image)->matrix[i][j].r = (unsigned char) c;
+            (*image)->matrix[i][j].g = (unsigned char) c;
+            (*image)->matrix[i][j].b = (unsigned char) c;
+        }
+    }
+
+}
+
+void brighten(Image **image, short amount) {
+    rgb(image,amount,amount,amount);
+}
+
+void rgb(Image **image, short red,short green, short blue){
+    int i,j;
+    struct {
+        int r;
+        int g;
+        int b;
+    } pixel;
+
+    if (red > MAX_BRIGHT || red < MIN_BRIGHT ||
+        green > MAX_BRIGHT || green < MIN_BRIGHT ||
+        blue > MAX_BRIGHT || blue < MIN_BRIGHT) {
+        fprintf(stderr,"RGB filter must have values ranging from -255 to 255.");
+        exit(EXIT_FAILURE);
+    }
+
+    for (i=0;i<(*image)->height;i++){
+        for (j=0;j<(*image)->width;j++){
+
+            pixel.r = (*image)->matrix[i][j].r + (red   * ( (*image)->max_bright / MAX_BRIGHT ));
+            pixel.g = (*image)->matrix[i][j].g + (green * ( (*image)->max_bright / MAX_BRIGHT ));
+            pixel.b = (*image)->matrix[i][j].b + (blue  * ( (*image)->max_bright / MAX_BRIGHT ));
+
+            (*image)->matrix[i][j].r = (pixel.r < 0)? (uint8_t) 0 :
+                                       (pixel.r > (*image)->max_bright)? (*image)->max_bright :
+                                       (uint8_t) pixel.r;
+
+            (*image)->matrix[i][j].g = (pixel.g < 0)? (uint8_t) 0 :
+                                       (pixel.g > (*image)->max_bright)? (*image)->max_bright :
+                                       (uint8_t) pixel.g;
+
+            (*image)->matrix[i][j].b = (pixel.b < 0)? (uint8_t) 0 :
+                                       (pixel.b > (*image)->max_bright)? (*image)->max_bright :
+                                       (uint8_t) pixel.b;
+        }
+    }
+
+
+}
 
 void invert(Image **image){
 

@@ -1,7 +1,3 @@
-//
-// Created by ebpedrollo on 03/04/17.
-//
-
 #ifndef PERFECTPIXELMESS_CONV_MAT_H
 
 

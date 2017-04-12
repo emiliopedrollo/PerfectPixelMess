@@ -1,7 +1,3 @@
-//
-// Created by ncc on 30/03/17.
-//
-
 #include <stdio.h>
 #include <stdbool.h>
 

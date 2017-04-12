@@ -1,7 +1,3 @@
-//
-// Created by ebpedrollo on 03/04/17.
-//
-
 #include <stdlib.h>
 #include <math.h>
 #include "conv_mat.h"

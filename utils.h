@@ -1,7 +1,3 @@
-//
-// Created by Emilio B. Pedrollo on 29/03/2017.
-//
-
 #include <elf.h>
 
 #ifndef PERFECTPIXELMESS_UTILS_H
