@@ -10,7 +10,7 @@
 #include "filter.h"
 
 FilterDef *extractFilterDef(char* argument);
-void convolution_matrix(Image **image, ConvolutionMatrix filter);
+ConvolutionMatrix * extractCustomMatrix(unsigned char size, char *arguments);
 void display_usage();
 void call_apply_filter(void *filter, void *image);
 
@@ -26,6 +26,7 @@ int main (int argc, char *argv[]) {
     char** tokens;
     Node *filters = NULL;
     Image *image;
+    ConvolutionMatrix *customMatrix = NULL;
 
     // Os blocos a seguir verificam a existência de parametros de
     // execução do executavel e definem variaveis que alterarão o
@@ -41,7 +42,7 @@ int main (int argc, char *argv[]) {
 
     while (reading) {
         int option_index = 0;
-        c = getopt_long(argc, argv, "i:o:f:h", long_options, &option_index);
+        c = getopt_long(argc, argv, "i:o:f:c:h", long_options, &option_index);
 
         switch (c) {
             case 'i':
@@ -65,7 +66,12 @@ int main (int argc, char *argv[]) {
                 free(tokens);
                 break;
             case 'c':
-                // TODO: reads the custom matrix
+                tokens = str_split(optarg,',');
+                customMatrix = extractCustomMatrix((unsigned char) atoi(*(tokens)), *(tokens + 1));
+                if (*(tokens + 2)){
+                    customMatrix->multiplier = (double)1/(double)atoi(*(tokens + 2));
+                }
+                free(tokens);
                 break;
             case 'h':
             case '?':
@@ -92,6 +98,10 @@ int main (int argc, char *argv[]) {
         fclose(in_file);
     }
 
+    if (customMatrix != NULL) {
+        convolution_matrix(&image,*customMatrix);
+        free(customMatrix);
+    }
 
     list_each_extra(filters, call_apply_filter, &image);
 
@@ -110,6 +120,48 @@ void call_apply_filter(void *filter, void *image){
     apply_filter((FilterDef *) filter, (Image **) image);
 }
 
+ConvolutionMatrix * extractCustomMatrix(unsigned char size, char *arguments) {
+
+    int i, j;
+    char** tk1;
+    char** tk2;
+    ConvolutionMatrix* matrix;
+
+    matrix = malloc(sizeof(ConvolutionMatrix));
+
+    if ((size % 2) == 0) {
+        fprintf(stderr,"Custom convolution matrix must have an odd size.");
+        exit(EXIT_FAILURE);
+    }
+
+    matrix->matrix_size = size;
+    matrix->multiplier = 1;
+
+    if (!arguments || countChars(arguments,'=') == 0){
+        fprintf(stderr,"Custom convolution matrix has not been defined.");
+        exit(EXIT_FAILURE);
+    } else {
+        tk1 = str_split(arguments,'=');
+        matrix->matrix = generate_matrix(size);
+        tk2 = str_split(*(tk1+1) , ';');
+
+        for (i=0;i<size;i++){
+            for (j=0;j<size;j++){
+                if (!*(tk2+(i*size+j))){
+                    fprintf(stderr,"Custom convolution matrix informed does not match it's size.");
+                    exit(EXIT_FAILURE);
+                }
+                matrix->matrix[i][j] = (short) atoi(*(tk2+(i*size+j)));
+            }
+        }
+
+        free(tk1);
+        free(tk2);
+    }
+
+    return matrix;
+}
+
 FilterDef *extractFilterDef(char* argument){
     FilterDef* filter;
     char** tokens;
@@ -126,6 +178,8 @@ FilterDef *extractFilterDef(char* argument){
         params_raw = malloc((sizeof *(tokens+1))+1);
         strcpy(params_raw,*(tokens+1));
         filter->params = str_split(params_raw,';');
+        free(tokens);
+        free(params_raw);
     }
 
     return filter;
@@ -142,9 +196,10 @@ void display_usage() {
     "                                 one of the filters listed bellow, F2=1 represent another with 1\n"
     "                                 as an argument. Filters must be separated by commas. Arguments, \n"
     "                                 if more than one must be separated by semicolons.\n"
-    "  -c --custom=S=3,M=1;1;1...   Runs a custom user defined convolution matrix where S is the matrix\n"
+    "  -c --custom=S,M=1;1;1...[,D] Runs a custom user defined convolution matrix where S is the matrix\n"
     "                                 size (must be an odd number) and M defines the matrix values\n"
-    "                                 separated by semicolons.\n"
+    "                                 separated by semicolons. Optionally can be defined a divider to be\n"
+    "                                 applied to the sum.\n"
     "\n"
     "\n"
     "The available filters are:\n"

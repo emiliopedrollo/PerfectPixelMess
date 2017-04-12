@@ -43,8 +43,6 @@ void apply_filter(FilterDef *filter, Image **image){
 
     } else if (strcasecmp(filter->name,"SHARP") == 0){
         convolution_matrix(image,get_sharp_matrix());
-    } else if (strcasecmp(filter->name,"CUSTOM") == 0){
-        // TODO: implements the custom matrix filter
     }
 }
 

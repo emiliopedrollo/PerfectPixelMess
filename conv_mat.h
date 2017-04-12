@@ -17,6 +17,7 @@ typedef struct {
 } ConvolutionMatrix;
 
 void free_matrix(short **matrix,unsigned char matrix_size);
+short **generate_matrix(unsigned char size);
 ConvolutionMatrix get_test_matrix();
 ConvolutionMatrix get_blur_matrix(char sample_size);
 ConvolutionMatrix get_border_detect_matrix();
