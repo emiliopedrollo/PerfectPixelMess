@@ -28,9 +28,9 @@ int main (int argc, char *argv[]) {
     Image *image;
     ConvolutionMatrix *customMatrix = NULL;
 
-    // Os blocos a seguir verificam a existência de parametros de
-    // execução do executavel e definem variaveis que alterarão o
-    // comportamento do mesmo de acordo com estes parametros
+    /*  Os blocos a seguir verificam a existência de parametros de */
+    /*  execução do executavel e definem variaveis que alterarão o */
+    /*  comportamento do mesmo de acordo com estes parametros */
     static struct option long_options[] = {
             {"input",  required_argument, 0, 'i'},
             {"output", required_argument, 0, 'o'},

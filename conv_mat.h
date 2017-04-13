@@ -21,4 +21,4 @@ ConvolutionMatrix get_sharp_matrix();
 
 #define PERFECTPIXELMESS_CONV_MAT_H
 
-#endif //PERFECTPIXELMESS_CONV_MAT_H
+#endif /* PERFECTPIXELMESS_CONV_MAT_H */

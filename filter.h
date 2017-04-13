@@ -15,4 +15,4 @@ void mirror(Image **image);
 
 #define PERFECTPIXELMESS_FILTER_H
 
-#endif //PERFECTPIXELMESS_FILTER_H
+#endif /* PERFECTPIXELMESS_FILTER_H */

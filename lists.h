@@ -19,4 +19,4 @@ void list_each_extra(Node *current, void (*fun)(void *, void *), void *extra_arg
 
 #define PERFECTPIXELMESS_LISTS_H
 
-#endif //PERFECTPIXELMESS_LISTS_H
+#endif /* PERFECTPIXELMESS_LISTS_H */

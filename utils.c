@@ -53,20 +53,20 @@ char** str_split(char* a_str, const char a_delim)
 }
 
 char *strdup (const char *s) {
-    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
-    if (d == NULL) return NULL;          // No memory
-    strcpy (d,s);                        // Copy the characters
-    return d;                            // Return the new string
+    char *d = malloc (strlen (s) + 1);   /*  Space for length plus nul */
+    if (d == NULL) return NULL;          /*  No memory */
+    strcpy (d,s);                        /*  Copy the characters */
+    return d;                            /*  Return the new string */
 }
 
-//char *topntail(char *str)
-//{
-//    size_t len = strlen(str);
-//    assert(len >= 2); // or whatever you want to do with short strings
-//    memmove(str, str+1, len-2);
-//    str[len-2] = 0;
-//    return str;
-//}
+/* char *topntail(char *str) */
+/* { */
+/*     size_t len = strlen(str); */
+/*     assert(len >= 2); // or whatever you want to do with short strings */
+/*     memmove(str, str+1, len-2); */
+/*     str[len-2] = 0; */
+/*     return str; */
+/* } */
 
 int countChars( char* s, char c )
 {

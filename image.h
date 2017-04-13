@@ -24,4 +24,4 @@ void free_image(Image* image);
 
 #define PERFECTPIXELMESS_IMAGE_H
 
-#endif //PERFECTPIXELMESS_IMAGE_H
+#endif /* PERFECTPIXELMESS_IMAGE_H */

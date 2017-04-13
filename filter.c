@@ -9,7 +9,7 @@ const int MIN_BRIGHT = -255;
 
 void apply_filter(FilterDef *filter, Image **image){
 
-    // Simple Filters
+    /*  Simple Filters */
     if (strcasecmp(filter->name,"INVERT") == 0) {
         invert(image);
     } else if (strcasecmp(filter->name,"RGB") == 0){
@@ -24,7 +24,7 @@ void apply_filter(FilterDef *filter, Image **image){
         greyscale(image);
     }
 
-    // Transform Filters
+    /*  Transform Filters */
     else if (strcasecmp(filter->name,"ROTATE") == 0) {
         rotate(image,(short)atoi(filter->params[0]));
     } else if (strcasecmp(filter->name,"FLIP") == 0) {
@@ -34,7 +34,7 @@ void apply_filter(FilterDef *filter, Image **image){
     }
 
 
-    // Convolution Matrix Filters
+    /*  Convolution Matrix Filters */
     else if (strcasecmp(filter->name,"TEST") == 0){
         convolution_matrix(image,get_test_matrix());
 

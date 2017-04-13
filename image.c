@@ -12,9 +12,9 @@ Image *load_image(FILE *stream) {
 
     char format[5];
     if (stream != NULL) {
-        //TODO: Treat invalid stream
-        //TODO: Treat comment lines
-        //TODO: Treat data too short
+        /* TODO: Treat invalid stream */
+        /* TODO: Treat comment lines */
+        /* TODO: Treat data too short */
 
         fscanf(stream, "%s\n", format);
         if (strcmp(format,"P3") != 0){
