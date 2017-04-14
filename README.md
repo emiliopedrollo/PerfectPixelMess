@@ -7,7 +7,7 @@ PerfectPixelMess é um projeto simples de manipulação de imagem em formato PPM
 ## Obtenção do código fonte
 O código-fonte está disponível publicamente online no endereço https://github.com/emiliopedrollo/PerfectPixelMess/ e é possível efetuar o download do fonte compactado em *.zip* diretamente no site ou através do gerenciador de versões *git* com a seguinte linha de comando:
 ```sh
-$ git clone https://github.com/emiliopedrollo/PerfectPixelMess.git
+git clone https://github.com/emiliopedrollo/PerfectPixelMess.git
 ```
 
 
@@ -16,12 +16,12 @@ Apesar de ser possível compilar o código fonte através do compilador padão *
 
 ### Utilizando cmake
 Caso não tenha o *cmake* instalado é possivel instalá-lo com a seguinte linha de comando como super usuário em distros baseadas no Debian (como o Ubuntu):
- ```sh
- # apt-get install -y cmake 
- ```
+```sh
+apt-get install -y cmake 
+```
 Para compilar basta ir até a pasta contendo o fonte e executar
 ```sh
-$ cmake . && make
+cmake . && make
 ```
 O compilador é esta instruído a utilizar o padrão C *ansi* para este projeto. Após a compilação o executável **ppm** estará na mesma pasta com os códigos-fonte.
 
@@ -29,7 +29,7 @@ O compilador é esta instruído a utilizar o padrão C *ansi* para este projeto.
 ### Utilizando gcc
 Caso você não tenha o *cmake* instalado e não possua permissão administrativas para instala-lo ou simplismente queira utilizar um método mais pimitivo é possível utilizar o compilador padrão *gcc* com a seguinte linha:
 ```sh
-$ gcc -o ppm -std=c11 -ansi main.c utils.c utils.h lists.c lists.h image.c image.h conv_mat.c conv_mat.h filter.c filter.h -lm
+gcc -o ppm -std=c11 -ansi main.c utils.c utils.h lists.c lists.h image.c image.h conv_mat.c conv_mat.h filter.c filter.h -lm
 ```
 
 ## Executando
@@ -37,7 +37,7 @@ O programa adota ideologias frequentemente observadas em outras aplicação unix
 
 Para uma explicação melhor do funcionamento e de quais são os paramatros de execução pode-se rodar o compilado com o parametro ```-h``` ou ```--help``` para exibir a habitual tela de isntruções encontrada em praticamente todo executável para *unix*.
 
-```sh
+```
 user@machine:~/ppm$ ./ppm -h
 Usage: ppm [options]...
 Apply filters to ppm images
